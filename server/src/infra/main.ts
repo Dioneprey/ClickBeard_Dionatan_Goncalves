@@ -13,6 +13,11 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   )
+  app.setGlobalPrefix('api')
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    methods: ['POST', 'PUT', 'PATCH', 'DELETE', 'GET'],
+  })
 
   const envService = app.get<ConfigService<Env, true>>(EnvService)
   const port = envService.get('PORT')
