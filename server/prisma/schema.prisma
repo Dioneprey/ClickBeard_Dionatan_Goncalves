@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    CLIENT
+    ADMIN
+}
+
+enum AppointmentStatus {
+    SCHEDULED
+    COMPLETED
+    CANCELLED
+}
+
+model User {
+    id        String    @id @default(uuid())
+    name      String
+    email     String    @unique
+    password  String
+    role      Role      @default(CLIENT)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    Appointment Appointment[]
+
+    @@map("users")
+}
+
+model Barber {
+    id         String   @id
+    name       String
+    birthDate  DateTime
+    hiringDate DateTime
+
+    BarberSpecialities BarberSpecialities[]
+    Appointment        Appointment[]
+
+    @@map("barbers")
+}
+
+model Speciality {
+    id   String @id @default(uuid())
+    name String
+
+    BarberSpecialities  BarberSpecialities[]
+    AppointmentServices AppointmentServices[]
+
+    @@map("specialities") // Mapeia para a tabela 'specialities' no banco de dados
+}
+
+model BarberSpecialities {
+    barberId     String
+    specialityId String
+
+    barber     Barber     @relation(fields: [barberId], references: [id])
+    speciality Speciality @relation(fields: [specialityId], references: [id])
+
+    @@id([barberId, specialityId])
+    @@map("barber_speacialities")
+}
+
+model Appointment {
+    id        String            @id @default(uuid())
+    dateTime  DateTime
+    clientId  String
+    barberId  String
+    status    AppointmentStatus @default(SCHEDULED)
+    createdAt DateTime          @default(now())
+    updatedAt DateTime?         @updatedAt
+
+    client              User                  @relation(fields: [clientId], references: [id])
+    barber              Barber                @relation(fields: [barberId], references: [id])
+    AppointmentServices AppointmentServices[]
+}
+
+model AppointmentServices {
+    appointmentId String
+    serviceId     String
+
+    appointment Appointment @relation(fields: [appointmentId], references: [id])
+    service     Speciality  @relation(fields: [serviceId], references: [id])
+
+    @@id([appointmentId, serviceId])
+    @@map("appointment_services")
+}
