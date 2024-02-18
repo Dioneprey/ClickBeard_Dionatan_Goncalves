@@ -25,6 +25,7 @@ export function SignUp() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = useForm<SignUpForm>({})
 
@@ -32,26 +33,26 @@ export function SignUp() {
     mutationFn: registerAccount,
     onError(error) {
       console.log(error)
+
+      toast.error('Erro ao cadastrar conta.')
     },
-  })
-
-  async function handleSignUp(data: SignUpForm) {
-    try {
-      await registerAccountFn({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      })
-
+    onSuccess() {
+      reset()
       toast.success('Conta cadastrada com sucesso!', {
         action: {
           label: 'Login',
           onClick: () => navigate(`/sign-in`),
         },
       })
-    } catch (error) {
-      toast.error('Erro ao cadastrar conta.')
-    }
+    },
+  })
+
+  async function handleSignUp(data: SignUpForm) {
+    await registerAccountFn({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    })
   }
 
   return (

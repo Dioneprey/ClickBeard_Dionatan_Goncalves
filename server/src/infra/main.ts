@@ -17,6 +17,7 @@ async function bootstrap() {
   app.enableCors({
     origin: ['http://localhost:5173'],
     methods: ['POST', 'PUT', 'PATCH', 'DELETE', 'GET'],
+    credentials: true,
   })
 
   const envService = app.get<ConfigService<Env, true>>(EnvService)

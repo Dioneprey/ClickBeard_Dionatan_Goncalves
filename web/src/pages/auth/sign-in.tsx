@@ -5,13 +5,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { signIn } from '@/api/sign-in'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { useAuth } from '@/context/auth-context'
-import Cookies from 'js-cookie'
 
 const signInForm = z.object({
   email: z.string().email(),
@@ -21,7 +19,7 @@ const signInForm = z.object({
 type SignInForm = z.infer<typeof signInForm>
 
 export function SignIn() {
-  const { saveUserSession } = useAuth()
+  const { SignIn: SignInFn } = useAuth()
   const navigate = useNavigate()
 
   const {
@@ -31,31 +29,25 @@ export function SignIn() {
   } = useForm<SignInForm>()
 
   const { mutateAsync: authenticate } = useMutation({
-    mutationFn: signIn,
+    mutationFn: SignInFn,
     onError: (error) => {
       console.log(error)
+      toast.error('Erro ao fazer login, por favor, tente novamente mais tarde.')
     },
-    onSuccess: (data) => {
-      Cookies.set('authStatus', 'authenticated', { expires: 1 })
-      console.log(variables)
-
+    onSuccess: () => {
       toast.success(
         'Login feito com sucesso, você será redirecionado para a aplicação.',
+        { closeButton: true },
       )
-    },
-  })
-
-  async function handleSignIn(data: SignInForm) {
-    try {
-      await authenticate({ email: data.email, password: data.password })
-      console.log('logou')
 
       navigate('/', {
         replace: true,
       })
-    } catch (error) {
-      toast.error('Erro ao fazer login, por favor, tente novamente mais tarde.')
-    }
+    },
+  })
+
+  async function handleSignIn({ email, password }: SignInForm) {
+    await authenticate({ email, password })
   }
 
   return (

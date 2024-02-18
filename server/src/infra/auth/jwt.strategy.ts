@@ -8,6 +8,7 @@ import { UserRole } from 'src/domain/barbershop/enterprise/entities/user'
 
 const tokenPayload = z.object({
   sub: z.string().uuid(),
+  name: z.string(),
   role: z.nativeEnum(UserRole),
   iat: z.number(),
   exp: z.number(),

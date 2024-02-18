@@ -3,7 +3,7 @@ import { RegisterBarberUseCase } from './register-barber'
 import { InMemoryBarbersRepository } from 'test/repositories/in-memory-barbers-repository'
 import { makeUser } from 'test/factories/make-user'
 import { UserRole } from '../../enterprise/entities/user'
-import { ForbbidenActionError } from './@errors/forbbiden-action-error'
+import { ForbbidenActionError } from './@errors/forbbiden-action.error'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryBarbersRepository: InMemoryBarbersRepository
