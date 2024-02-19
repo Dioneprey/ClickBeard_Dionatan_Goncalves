@@ -1,8 +1,10 @@
-import { Either, right } from 'src/core/either'
+import { Either, left, right } from 'src/core/either'
 import { Injectable } from '@nestjs/common'
 import { AppointmentRepository } from '../repositories/appointment-repository'
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
+import { BarberRepository } from '../repositories/barber-repository'
+import { ResourceNotFoundError } from './@errors/resource-not-found.error'
 dayjs.extend(isToday)
 
 interface FetchBarberAvailableSlotsUseCaseRequest {
@@ -11,7 +13,7 @@ interface FetchBarberAvailableSlotsUseCaseRequest {
 }
 
 type FetchBarberAvailableSlotsUseCaseResponse = Either<
-  undefined,
+  ResourceNotFoundError,
   {
     availableSlots: string[]
   }
@@ -19,12 +21,21 @@ type FetchBarberAvailableSlotsUseCaseResponse = Either<
 
 @Injectable()
 export class FetchBarberAvailableSlotsUseCase {
-  constructor(private appointmentRepository: AppointmentRepository) {}
+  constructor(
+    private appointmentRepository: AppointmentRepository,
+    private barberRepository: BarberRepository,
+  ) {}
 
   async execute({
     date,
     barberId,
   }: FetchBarberAvailableSlotsUseCaseRequest): Promise<FetchBarberAvailableSlotsUseCaseResponse> {
+    const barberExists = await this.barberRepository.findById(barberId)
+
+    if (!barberExists) {
+      return left(new ResourceNotFoundError(barberId))
+    }
+
     const appointmentsInDay = await this.appointmentRepository.findAllByDay({
       date,
       barberId,

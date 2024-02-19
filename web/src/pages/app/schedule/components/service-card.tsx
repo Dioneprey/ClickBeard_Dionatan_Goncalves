@@ -1,3 +1,4 @@
+import { Speciality } from '@/api/fetch-specialities'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -7,16 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ServiceData, ServiceSummary } from '@/context/schedule-context'
+import { ServiceSummary } from '@/context/schedule-context'
 import { updateServicesSummary } from '@/utils/format-schedule-summary'
 import { formatTime } from '@/utils/format-time-value'
 import { Clock2 } from 'lucide-react'
 
 interface ServiceCardProps {
-  serviceData: ServiceData
-  temporaryServices: ServiceData[]
+  speciality: Speciality
+  temporaryServices: Speciality[]
   temporaryServicesSummary: ServiceSummary
-  setTemporaryServices: React.Dispatch<React.SetStateAction<ServiceData[]>>
+  setTemporaryServices: React.Dispatch<React.SetStateAction<Speciality[]>>
   setTemporaryServicesSummary: React.Dispatch<
     React.SetStateAction<ServiceSummary>
   >
@@ -24,16 +25,16 @@ interface ServiceCardProps {
 
 interface ToggleTemporaryServiceParams {
   method: 'ADD' | 'REMOVE'
-  serviceData: ServiceData
+  speciality: Speciality
 }
 
 export function ServiceCard({
-  serviceData,
+  speciality,
   temporaryServices,
   setTemporaryServices,
   setTemporaryServicesSummary,
 }: ServiceCardProps) {
-  const { id, name, photo, price, time } = serviceData
+  const { id, name, photo, price, time } = speciality
 
   const serviceIsSelected = temporaryServices.some(
     (service) => service.id === id,
@@ -43,18 +44,18 @@ export function ServiceCard({
 
   function toggleTemporaryService({
     method,
-    serviceData,
+    speciality,
   }: ToggleTemporaryServiceParams) {
     if (method === 'ADD') {
       setTemporaryServices((prevState) => {
-        const newState = [...prevState, serviceData]
+        const newState = [...prevState, speciality]
         setTemporaryServicesSummary(updateServicesSummary(newState))
         return newState
       })
     } else if (method === 'REMOVE') {
       setTemporaryServices((prevState) => {
         const newState = prevState.filter(
-          (service) => service.id !== serviceData.id,
+          (service) => service.id !== speciality.id,
         )
         setTemporaryServicesSummary(updateServicesSummary(newState))
         return newState
@@ -67,7 +68,7 @@ export function ServiceCard({
       onClick={() =>
         toggleTemporaryService({
           method,
-          serviceData: {
+          speciality: {
             id,
             name,
             photo,
@@ -98,6 +99,38 @@ export function ServiceCard({
         </div>
       </CardHeader>
       <CardContent onClick={(e) => e.stopPropagation()}></CardContent>
+    </Card>
+  )
+}
+
+interface ServiceCardOnlyViewProps {
+  speciality: Speciality
+}
+
+export function ServiceCardOnlyView({ speciality }: ServiceCardOnlyViewProps) {
+  const { name, photo, price, time } = speciality
+
+  return (
+    <Card className="w-[200px] hover:border-primary">
+      <CardHeader className="flex p-2 flex-col justify-center items-center gap-2">
+        <Avatar className="h-32 w-full rounded-lg">
+          <AvatarImage src={photo} />
+          <AvatarFallback>Serviço</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col items-center gap-1">
+          <CardTitle className="text-lg">{name}</CardTitle>
+          <CardDescription>
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(price)}
+          </CardDescription>
+          <Badge className="flex items-center gap-1">
+            <Clock2 className="h-4 w-4" />
+            <span>{formatTime(time)}</span>
+          </Badge>
+        </div>
+      </CardHeader>
     </Card>
   )
 }

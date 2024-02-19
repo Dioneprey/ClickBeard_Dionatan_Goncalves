@@ -40,6 +40,7 @@ model Barber {
     name       String
     birthDate  DateTime
     hiringDate DateTime
+    photo      String?
 
     BarberSpecialities BarberSpecialities[]
     Appointment        Appointment[]
@@ -48,8 +49,11 @@ model Barber {
 }
 
 model Speciality {
-    id   String @id @default(uuid())
-    name String
+    id    String  @id @default(uuid())
+    name  String
+    photo String?
+    price Float   @default(0.0)
+    time  String  @default("00:00")
 
     BarberSpecialities  BarberSpecialities[]
     AppointmentServices AppointmentServices[]

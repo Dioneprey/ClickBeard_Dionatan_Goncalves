@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '../repositories/users-repository'
 import { ForbbidenActionError } from './@errors/forbbiden-action.error'
 import { Barber } from '../../enterprise/entities/barber'
-import { Speciality } from '../../enterprise/entities/speciality'
-import { BarbersRepository } from '../repositories/barber-repository'
+import { BarberRepository } from '../repositories/barber-repository'
+import { SpecialityRepository } from '../repositories/speciality-repository'
+import { ResourceNotFoundError } from './@errors/resource-not-found.error'
+import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 
 interface RegisterBarberUseCaseRequest {
   userId: string
@@ -13,12 +15,13 @@ interface RegisterBarberUseCaseRequest {
     name: string
     birthDate: Date
     hiringDate: Date
+    photo?: string
     specialities: string[]
   }
 }
 
 type RegisterBarberUseCaseResponse = Either<
-  ForbbidenActionError,
+  ForbbidenActionError | ResourceNotFoundError,
   {
     barber: Barber
   }
@@ -28,7 +31,8 @@ type RegisterBarberUseCaseResponse = Either<
 export class RegisterBarberUseCase {
   constructor(
     private usersRepository: UsersRepository,
-    private barbersRepository: BarbersRepository,
+    private barberRepository: BarberRepository,
+    private specialityRepository: SpecialityRepository,
   ) {}
 
   async execute({
@@ -42,23 +46,48 @@ export class RegisterBarberUseCase {
       return left(new ForbbidenActionError())
     }
 
-    const { name, birthDate, hiringDate, specialities } = barberData
+    const { name, birthDate, hiringDate, photo, specialities } = barberData
+
+    const specialitiesExists = await Promise.all(
+      specialities.map(async (specialityId) => {
+        const speciality =
+          await this.specialityRepository.findById(specialityId)
+
+        if (!speciality) {
+          return {
+            id: specialityId,
+            name: null,
+          }
+        }
+
+        return speciality
+      }),
+    )
+
+    const notFoundSpecialities = specialitiesExists.filter(
+      (speciality) => speciality?.name === null,
+    )
+
+    if (notFoundSpecialities.length > 0) {
+      return left(
+        new ResourceNotFoundError(
+          notFoundSpecialities.map((speciality) => speciality.id).join(', '),
+        ),
+      )
+    }
 
     const barber = Barber.create({
       name,
       birthDate,
+      photo,
       hiringDate,
     })
 
-    const barberSpecialities = specialities.map((speciality) =>
-      Speciality.create({
-        name: speciality,
-      }),
+    barber.specialitiesId = specialities.map(
+      (specialityId) => new UniqueEntityID(specialityId),
     )
 
-    barber.specialities = barberSpecialities
-
-    await this.barbersRepository.create(barber)
+    await this.barberRepository.create(barber)
 
     return right({
       barber,

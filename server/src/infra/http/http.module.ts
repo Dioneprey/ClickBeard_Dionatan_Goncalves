@@ -8,6 +8,16 @@ import { RegisterUserUseCase } from 'src/domain/barbershop/application/use-cases
 import { HomeController } from './controllers/home.controller'
 import { GetUserProfileController } from './controllers/get-user-profile.controller'
 import { GetUserProfileUseCase } from 'src/domain/barbershop/application/use-cases/get-user-profile'
+import { FetchBarbersController } from './controllers/fetch-barbers.controller'
+import { FetchBarbersUseCase } from 'src/domain/barbershop/application/use-cases/fetch-barbers'
+import { FetchAllSpecialitiesController } from './controllers/fetch-all-specialities.controller'
+import { FetchAllSpecialitiesUseCase } from 'src/domain/barbershop/application/use-cases/fetch-all-specialities'
+import { RegisterBarberController } from './controllers/register-barber.controller'
+import { RegisterBarberUseCase } from 'src/domain/barbershop/application/use-cases/register-barber'
+import { FetchBarberAvailableSlotsController } from './controllers/fetch-barber-available-slots.controller'
+import { FetchBarberAvailableSlotsUseCase } from 'src/domain/barbershop/application/use-cases/fetch-barber-available-slots'
+import { RegisterSpecialityController } from './controllers/register-speciality.controller'
+import { RegisterSpecialityUseCase } from 'src/domain/barbershop/application/use-cases/register-speciality'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -16,7 +26,21 @@ import { GetUserProfileUseCase } from 'src/domain/barbershop/application/use-cas
     AuthenticateController,
     RegisterUserController,
     GetUserProfileController,
+    FetchBarbersController,
+    FetchAllSpecialitiesController,
+    RegisterBarberController,
+    FetchBarberAvailableSlotsController,
+    RegisterSpecialityController,
   ],
-  providers: [AuthenticateUseCase, RegisterUserUseCase, GetUserProfileUseCase],
+  providers: [
+    AuthenticateUseCase,
+    RegisterUserUseCase,
+    GetUserProfileUseCase,
+    FetchBarbersUseCase,
+    FetchAllSpecialitiesUseCase,
+    RegisterBarberUseCase,
+    FetchBarberAvailableSlotsUseCase,
+    RegisterSpecialityUseCase,
+  ],
 })
 export class HttpModule {}

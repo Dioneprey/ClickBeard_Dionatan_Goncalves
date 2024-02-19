@@ -17,8 +17,8 @@ model Appointment {
 }
 */
 
-enum AppointmentStatus {
-  SCHEDULED = -'scheduled',
+export enum AppointmentStatus {
+  SCHEDULED = 'scheduled',
   COMPLETED = 'completed',
   CANCELLED = 'canceled',
 }

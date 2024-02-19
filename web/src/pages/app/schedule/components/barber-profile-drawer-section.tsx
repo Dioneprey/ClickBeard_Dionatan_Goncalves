@@ -1,19 +1,28 @@
+import { Barber } from '@/api/fetch-barbers'
+import { ServiceCardOnlyView } from './service-card'
+
 interface BarberProfileDrawerSectionProps {
+  barberData: Barber
   section: 'about' | 'photos' | 'reviews'
 }
 
 export function BarberProfileDrawerSection({
   section,
+  barberData,
 }: BarberProfileDrawerSectionProps) {
   return (
-    <div className="h-[300px] ">
+    <div className="h-[300px] overflow-y-auto flex">
       {section === 'about' && (
-        <p className="text-muted-foreground">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum quidem
-          cum veniam voluptatibus laboriosam, similique odit maxime dolores
-          possimus nesciunt consequuntur beatae debitis! Quidem, optio. Eius
-          voluptatum numquam repellat consequuntur!
-        </p>
+        <div className="w-full flex justify-center flex-wrap gap-4 overflow-y-auto">
+          {barberData?.specialities.map((barberSpeciality) => {
+            return (
+              <ServiceCardOnlyView
+                key={barberSpeciality.id}
+                speciality={barberSpeciality}
+              />
+            )
+          })}
+        </div>
       )}
       {section === 'photos' && <div>fotos</div>}
       {section === 'reviews' && <div>reviews</div>}

@@ -1,12 +1,6 @@
+import { Barber } from '@/api/fetch-barbers'
+import { Speciality } from '@/api/fetch-specialities'
 import { ReactNode, createContext, useContext, useState } from 'react'
-
-export interface ServiceData {
-  id: string
-  name: string
-  photo: string
-  price: number
-  time: string
-}
 
 export interface ServiceSummary {
   selectedServicesCount: number
@@ -15,19 +9,26 @@ export interface ServiceSummary {
 }
 
 export interface ToggleSelectedServicesParams {
-  serviceData: ServiceData[]
+  speciality: Speciality[]
   serviceSummary: ServiceSummary
 }
 
+export interface ScheduleDateTime {
+  date?: string
+  hourSlot?: string
+}
+
 interface ScheduleContextProps {
-  selectedBarber?: string
-  selectedServices: ServiceData[]
+  selectedBarber?: Barber
+  selectedServices: Speciality[]
   servicesSummary: ServiceSummary
-  setSelectedBarber: (value: string) => void
+  scheduleDateTime?: ScheduleDateTime
+  setSelectedBarber: (value: Barber) => void
   toggleSelectedServices: ({
-    serviceData,
+    speciality,
     serviceSummary,
   }: ToggleSelectedServicesParams) => void
+  toggleScheduleDateTime: ({ date, hourSlot }: ScheduleDateTime) => void
 }
 
 const ScheduleContext = createContext<ScheduleContextProps>({
@@ -38,15 +39,20 @@ const ScheduleContext = createContext<ScheduleContextProps>({
     selectedServicesPrice: 0,
     selectedServicesTime: '00:00',
   },
+  scheduleDateTime: undefined,
   setSelectedBarber: () => {},
   toggleSelectedServices: () => {},
+  toggleScheduleDateTime: () => {},
 })
 
 export function ScheduleContextProvider({ children }: { children: ReactNode }) {
-  const [selectedBarber, setSelectedBarber] = useState<string | undefined>(
+  const [selectedBarber, setSelectedBarber] = useState<Barber | undefined>(
     undefined,
   )
-  const [selectedServices, setSelectedServices] = useState<ServiceData[]>([])
+  const [scheduleDateTime, setScheduleDateTime] = useState<
+    ScheduleDateTime | undefined
+  >(undefined)
+  const [selectedServices, setSelectedServices] = useState<Speciality[]>([])
   const [servicesSummary, setServicesSummary] = useState<ServiceSummary>({
     selectedServicesCount: 0,
     selectedServicesPrice: 0,
@@ -54,12 +60,17 @@ export function ScheduleContextProvider({ children }: { children: ReactNode }) {
   })
 
   function toggleSelectedServices({
-    serviceData,
+    speciality,
     serviceSummary,
   }: ToggleSelectedServicesParams) {
-    setSelectedServices(serviceData)
+    setSelectedServices(speciality)
     setServicesSummary(serviceSummary)
   }
+
+  function toggleScheduleDateTime({ date, hourSlot }: ScheduleDateTime) {
+    setScheduleDateTime({ date, hourSlot })
+  }
+  console.log(scheduleDateTime)
 
   return (
     <ScheduleContext.Provider
@@ -67,8 +78,10 @@ export function ScheduleContextProvider({ children }: { children: ReactNode }) {
         selectedBarber,
         selectedServices,
         servicesSummary,
+        scheduleDateTime,
         setSelectedBarber,
         toggleSelectedServices,
+        toggleScheduleDateTime,
       }}
     >
       {children}

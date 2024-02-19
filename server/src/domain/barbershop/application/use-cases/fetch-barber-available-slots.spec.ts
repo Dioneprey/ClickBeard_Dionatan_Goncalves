@@ -3,19 +3,28 @@ import { InMemoryAppointmentRepository } from 'test/repositories/in-memory-appoi
 import dayjs from 'dayjs'
 import { makeAppointment } from 'test/factories/make-appointment'
 import { makeBarber } from 'test/factories/make-barber'
+import { InMemoryBarberRepository } from 'test/repositories/in-memory-barbers-repository'
+
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository
+let inMemoryBarberRepository: InMemoryBarberRepository
 
 let sut: FetchBarberAvailableSlotsUseCase
 
 describe('Fetch available barber slots on the day', () => {
   beforeEach(() => {
     inMemoryAppointmentRepository = new InMemoryAppointmentRepository()
+    inMemoryBarberRepository = new InMemoryBarberRepository()
 
-    sut = new FetchBarberAvailableSlotsUseCase(inMemoryAppointmentRepository)
+    sut = new FetchBarberAvailableSlotsUseCase(
+      inMemoryAppointmentRepository,
+      inMemoryBarberRepository,
+    )
   })
 
   it('should be able to fetch for barber slots available on the day', async () => {
     const barber = makeBarber()
+
+    await inMemoryBarberRepository.create(barber)
 
     const appointment = makeAppointment({
       dateTime: dayjs().add(1, 'hour').toDate(),
@@ -33,6 +42,7 @@ describe('Fetch available barber slots on the day', () => {
 
     expect(result.isRight).toBeTruthy()
     // horário reservado não deve aparecer nos horários livres
+    if (result.isLeft()) return
     expect(result.value?.availableSlots).not.contains(reservedSlots)
   })
 })

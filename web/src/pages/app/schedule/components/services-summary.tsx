@@ -1,13 +1,13 @@
+import { Speciality } from '@/api/fetch-specialities'
 import { Button } from '@/components/ui/button'
 import {
-  ServiceData,
   ServiceSummary as ServiceSummaryType,
   useSchedule,
 } from '@/context/schedule-context'
 import { formatTime } from '@/utils/format-time-value'
 
 interface ServiceSummaryProps {
-  temporaryServices: ServiceData[]
+  temporaryServices: Speciality[]
   temporaryServicesSummary: ServiceSummaryType
   setOpenServiceDrawer: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -43,7 +43,7 @@ export function ServiceSummary({
         disabled={temporaryServicesSummary.selectedServicesCount === 0}
         onClick={() => {
           toggleSelectedServices({
-            serviceData: temporaryServices,
+            speciality: temporaryServices,
             serviceSummary: temporaryServicesSummary,
           })
           setOpenServiceDrawer(false)

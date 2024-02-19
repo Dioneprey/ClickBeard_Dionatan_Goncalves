@@ -12,16 +12,16 @@ import { ServiceCard } from './service-card'
 import { Separator } from '@/components/ui/separator'
 import { useEffect, useState } from 'react'
 import {
-  ServiceData,
   ServiceSummary as ServiceSummaryType,
   useSchedule,
 } from '@/context/schedule-context'
 import { ServiceSummary } from './services-summary'
+import { Speciality } from '@/api/fetch-specialities'
 
 export function ServicesDrawer() {
-  const { selectedServices, servicesSummary } = useSchedule()
+  const { selectedBarber, selectedServices, servicesSummary } = useSchedule()
   // Pegando valores temporários pois só será salvo caso clique no botão "Continuar" em <ServiceSummary />
-  const [temporaryServices, setTemporaryServices] = useState<ServiceData[]>([])
+  const [temporaryServices, setTemporaryServices] = useState<Speciality[]>([])
   const [temporaryServicesSummary, setTemporaryServicesSummary] =
     useState<ServiceSummaryType>(servicesSummary)
   const [openServiceDrawer, setOpenServiceDrawer] = useState(false)
@@ -51,16 +51,10 @@ export function ServicesDrawer() {
         </DrawerHeader>
         <DrawerFooter className="sm:w-[80%] w-[100%] overflow-y-auto flex justify-center items-center">
           <div className="w-full flex justify-center flex-wrap gap-4 overflow-y-auto">
-            {Array.from({ length: 5 }, (_, index) => (
+            {selectedBarber?.specialities.map((barberSpeciality) => (
               <ServiceCard
-                key={index}
-                serviceData={{
-                  id: (index + 1).toString(),
-                  name: 'Acabamento',
-                  photo: 'https://github.com/shadcn.png',
-                  price: 50,
-                  time: '00:30',
-                }}
+                key={barberSpeciality.id}
+                speciality={barberSpeciality}
                 temporaryServices={temporaryServices}
                 temporaryServicesSummary={temporaryServicesSummary}
                 setTemporaryServices={setTemporaryServices}

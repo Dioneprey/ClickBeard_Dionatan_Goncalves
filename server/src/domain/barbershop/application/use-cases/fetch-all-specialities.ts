@@ -1,7 +1,7 @@
 import { Either, right } from 'src/core/either'
 import { Injectable } from '@nestjs/common'
 import { Speciality } from '../../enterprise/entities/speciality'
-import { SpecialitiesRepository } from '../repositories/speciality-repository'
+import { SpecialityRepository } from '../repositories/speciality-repository'
 
 type FetchAllSpecialitiesUseCaseResponse = Either<
   undefined,
@@ -12,10 +12,10 @@ type FetchAllSpecialitiesUseCaseResponse = Either<
 
 @Injectable()
 export class FetchAllSpecialitiesUseCase {
-  constructor(private specialitiesRepository: SpecialitiesRepository) {}
+  constructor(private SpecialityRepository: SpecialityRepository) {}
 
   async execute(): Promise<FetchAllSpecialitiesUseCaseResponse> {
-    const specialities = await this.specialitiesRepository.findAll()
+    const specialities = await this.SpecialityRepository.findAll()
 
     return right({
       specialities,

@@ -1,8 +1,18 @@
-import { BarbersRepository } from 'src/domain/barbershop/application/repositories/barber-repository'
+import { BarberRepository } from 'src/domain/barbershop/application/repositories/barber-repository'
 import { Barber } from 'src/domain/barbershop/enterprise/entities/barber'
 
-export class InMemoryBarbersRepository implements BarbersRepository {
+export class InMemoryBarberRepository implements BarberRepository {
   public items: Barber[] = []
+
+  async findById(barberId: string) {
+    const barber = this.items.find((item) => item.id.toString() === barberId)
+
+    if (!barber) {
+      return null
+    }
+
+    return barber
+  }
 
   async findAll() {
     return this.items

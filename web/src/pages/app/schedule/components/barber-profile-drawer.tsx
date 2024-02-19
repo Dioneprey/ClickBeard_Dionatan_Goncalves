@@ -1,8 +1,12 @@
+import { formatDistance, differenceInYears } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -11,11 +15,18 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
 import { BarberProfileDrawerSection } from './barber-profile-drawer-section'
+import { Barber } from '@/api/fetch-barbers'
 
-export function BarberProfileDrawer() {
+interface BarberProfileDrawerProps {
+  barberData: Barber
+}
+
+export function BarberProfileDrawer({ barberData }: BarberProfileDrawerProps) {
   const [activeSection, setActiveSection] = useState<
     'about' | 'photos' | 'reviews'
   >('about')
+
+  const { name, photo, hiringDate, birthDate, specialities } = barberData
 
   return (
     <Drawer>
@@ -25,12 +36,27 @@ export function BarberProfileDrawer() {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="justify-center items-center">
-        <DrawerHeader className="flex flex-col justify-center items-center">
+        <DrawerHeader className="flex gap-5 justify-center ">
           <Avatar className="h-16 w-16">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={photo} />
             <AvatarFallback>Barbeiro</AvatarFallback>
           </Avatar>
-          <DrawerTitle>Nome do barbeiro</DrawerTitle>
+          <div className="flex flex-col gap-1">
+            <DrawerTitle>{name}</DrawerTitle>
+            <DrawerDescription>
+              {differenceInYears(new Date(), birthDate)} anos
+            </DrawerDescription>
+            <DrawerDescription>
+              Membro da equipe{' '}
+              {formatDistance(hiringDate, new Date(), {
+                addSuffix: true,
+                locale: ptBR,
+              })}
+            </DrawerDescription>
+            <DrawerDescription>
+              {specialities.length} especialidade(s)
+            </DrawerDescription>
+          </div>
         </DrawerHeader>
         <DrawerFooter className="sm:w-[80%] w-[100%] flex justify-center items-center">
           <div className="flex justify-between items-center gap-2">
@@ -59,7 +85,10 @@ export function BarberProfileDrawer() {
             </Button>
           </div>
           <Separator className="w-full" />
-          <BarberProfileDrawerSection section={activeSection} />
+          <BarberProfileDrawerSection
+            barberData={barberData}
+            section={activeSection}
+          />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
