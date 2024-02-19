@@ -74,7 +74,8 @@ model BarberSpecialities {
 
 model Appointment {
     id        String            @id @default(uuid())
-    dateTime  DateTime
+    day       DateTime
+    hour      String
     clientId  String
     barberId  String
     status    AppointmentStatus @default(SCHEDULED)

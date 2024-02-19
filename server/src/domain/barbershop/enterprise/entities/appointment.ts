@@ -1,21 +1,6 @@
 import { Entity } from 'src/core/entities/entity'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { Optional } from 'src/core/types/optional'
-/* 
-model Appointment {
-    id        String            @id @default(uuid())
-    dateTime  DateTime
-    clientId  String
-    barberId  String
-    status    AppointmentStatus @default(SCHEDULED)
-    createdAt DateTime          @default(now())
-    updatedAt DateTime?         @updatedAt
-
-    client              Person                @relation(fields: [clientId], references: [id])
-    barber              Barber                @relation(fields: [barberId], references: [personId])
-    AppointmentServices AppointmentServices[]
-}
-*/
 
 export enum AppointmentStatus {
   SCHEDULED = 'scheduled',
@@ -24,7 +9,8 @@ export enum AppointmentStatus {
 }
 
 export interface AppointmentProps {
-  dateTime: Date
+  day: Date
+  hour: string
   clientId: UniqueEntityID
   barberId: UniqueEntityID
   status: AppointmentStatus
@@ -33,12 +19,20 @@ export interface AppointmentProps {
 }
 
 export class Appointment extends Entity<AppointmentProps> {
-  get dateTime() {
-    return this.props.dateTime
+  get day() {
+    return this.props.day
   }
 
-  set dateTime(dateTime: Date) {
-    this.props.dateTime = dateTime
+  set day(day: Date) {
+    this.props.day = day
+  }
+
+  get hour() {
+    return this.props.hour
+  }
+
+  set hour(hour: string) {
+    this.props.hour = hour
   }
 
   get clientId() {

@@ -9,7 +9,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { CalendarScheduler } from './components/calendar-scheduler'
 import { format } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, ChevronLeft, Eraser } from 'lucide-react'
+import { MultiStepSchedule } from './components/multi-step-schedule'
+import { Button } from '@/components/ui/button'
 
 export function Schedule() {
   const {
@@ -17,6 +19,10 @@ export function Schedule() {
     selectedServices,
     servicesSummary,
     scheduleDateTime,
+    scheduleStep,
+    setScheduleStep,
+    resetSchedule,
+    handleMakeAppointment,
   } = useSchedule()
 
   const { data: barbers, isLoading: isLoadingFetchBarbers } = useQuery({
@@ -38,7 +44,7 @@ export function Schedule() {
               <div className="flex gap-5 justify-center items-center">
                 {Array.from({ length: 3 }, (_, index) => (
                   <Skeleton
-                    className="w-[200px] h-[230px] rounded-lg"
+                    className="w-[300px] py-5 h-[280px] rounded-lg"
                     key={index + 1}
                   />
                 ))}
@@ -55,6 +61,29 @@ export function Schedule() {
         </ScrollArea>
 
         {selectedBarber && (
+          <div className="flex flex-col items-center gap-5">
+            {scheduleStep >= 2 && (
+              <Button
+                onClick={() => {
+                  setScheduleStep((prevState) => prevState - 1)
+                }}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <span>
+                  <ChevronLeft />
+                </span>
+                <span>Voltar</span>
+              </Button>
+            )}
+            <MultiStepSchedule />
+            <Button onClick={() => resetSchedule()} variant="outline">
+              <Eraser />
+            </Button>
+          </div>
+        )}
+
+        {scheduleStep === 1 && selectedBarber && (
           <div className="space-y-5">
             <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
               Escolha os serviços
@@ -62,11 +91,12 @@ export function Schedule() {
             <ServicesDrawer />
           </div>
         )}
+        {scheduleStep === 2 && selectedServices.length > 0 && (
+          <CalendarScheduler />
+        )}
 
-        {selectedServices.length > 0 && <CalendarScheduler />}
-
-        {scheduleDateTime?.date && (
-          <div className="flex flex-col items-center justify-center">
+        {scheduleStep === 3 && scheduleDateTime?.date && (
+          <div className="flex p-10 border rounded-xl flex-col items-center justify-center">
             <span className="text-2xl font-bold">CONFIRME SUA RESERVA</span>
             <span className="mb-5">Verifique se está tudo certo</span>
             <span className="flex items-center gap-1">
@@ -98,6 +128,14 @@ export function Schedule() {
               ))}{' '}
               (duração : {servicesSummary.selectedServicesTime}h)
             </span>
+            <div className="w-full mt-5">
+              <Button
+                onClick={() => handleMakeAppointment()}
+                className="w-full"
+              >
+                Confirmar
+              </Button>
+            </div>
           </div>
         )}
       </div>

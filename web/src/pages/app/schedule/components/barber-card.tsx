@@ -10,12 +10,17 @@ interface BarberCardProps {
 }
 
 export function BarberCard({ barberData }: BarberCardProps) {
-  const { selectedBarber, setSelectedBarber } = useSchedule()
+  const { selectedBarber, setSelectedBarber, setScheduleStep, resetSchedule } =
+    useSchedule()
   const { id, name, photo } = barberData
   return (
     <Card
-      onClick={() => setSelectedBarber(barberData)}
-      className={`w-[200px] cursor-pointer ${selectedBarber?.id === id && 'border-primary'}`}
+      onClick={() => {
+        resetSchedule()
+        setSelectedBarber(barberData)
+        setScheduleStep(1)
+      }}
+      className={`w-[300px] py-5 cursor-pointer ${selectedBarber?.id === id && 'border-primary'}`}
     >
       <CardHeader className="flex flex-col justify-center items-center gap-2">
         <Avatar className="h-20 w-20">

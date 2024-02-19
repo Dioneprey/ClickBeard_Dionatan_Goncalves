@@ -9,14 +9,21 @@ import ptBR from 'date-fns/locale/pt-BR'
 import { useState } from 'react'
 
 export function CalendarScheduler() {
-  const { selectedBarber, scheduleDateTime, toggleScheduleDateTime } =
-    useSchedule()
+  const {
+    selectedBarber,
+    scheduleDateTime,
+    toggleScheduleDateTime,
+    setScheduleStep,
+    availableSlotsInDay,
+    setAvailableSlotsInDay,
+  } = useSchedule()
   const [
     fetchBarberAvailableSlotsIsLoading,
     setFetchBarberAvailableSlotsIsLoading,
   ] = useState(false)
-  const [availableSlotsInDay, setAvailableSlotsInDay] = useState<string[]>([])
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(
+    scheduleDateTime?.date ? new Date(scheduleDateTime?.date) : undefined,
+  )
 
   const disabledDays = (day: Date) => {
     return isBefore(day, startOfDay(new Date()))
@@ -46,9 +53,11 @@ export function CalendarScheduler() {
     <>
       <Calendar
         mode="single"
+        // @ts-expect-error algun erro de tipagem que aparece vez ou outra mas não interfere no comportamento
         locale={ptBR}
         disabled={fetchBarberAvailableSlotsIsLoading || disabledDays}
         selected={date}
+        // @ts-expect-error algun erro de tipagem que aparece vez ou outra mas não interfere no comportamento
         onSelect={(e: Date) => {
           if (e) {
             setDate(e)
@@ -72,12 +81,12 @@ export function CalendarScheduler() {
         </div>
       ) : (
         <>
-          {availableSlotsInDay.length < 1 ? (
+          {date && availableSlotsInDay.length < 1 ? (
             <span className="text-rose-500">
               Sem horários livres para o dia e serviço(s) selecionado(s).
             </span>
           ) : (
-            <div className="flex gap-2 md:max-w-[80%] w-full pb-3 overflow-x-auto items-center">
+            <div className="flex gap-2 w-full pb-3 overflow-x-auto items-center justify-center">
               {availableSlotsInDay.map((slot) => {
                 const isSlotChosed =
                   scheduleDateTime?.date === date?.toISOString() &&
@@ -85,12 +94,13 @@ export function CalendarScheduler() {
 
                 return (
                   <Button
-                    onClick={() =>
+                    onClick={() => {
                       toggleScheduleDateTime({
                         date: date?.toISOString() ?? '',
                         hourSlot: slot,
                       })
-                    }
+                      setScheduleStep(3)
+                    }}
                     key={slot}
                     className={`cursor-pointer ${isSlotChosed ? 'bg-primary' : 'bg-emerald-500'} hover:bg-primary/80 flex-shrink-0  h-16 w-16 rounded-full flex flex-col  items-center justify-center`}
                   >

@@ -17,7 +17,7 @@ export function ServiceSummary({
   temporaryServicesSummary,
   setOpenServiceDrawer,
 }: ServiceSummaryProps) {
-  const { toggleSelectedServices } = useSchedule()
+  const { toggleSelectedServices, setScheduleStep } = useSchedule()
 
   return (
     <div className="flex gap-5 items-center">
@@ -46,6 +46,7 @@ export function ServiceSummary({
             speciality: temporaryServices,
             serviceSummary: temporaryServicesSummary,
           })
+          setScheduleStep(2)
           setOpenServiceDrawer(false)
         }}
       >

@@ -27,7 +27,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 
     const appointments = await this.prisma.appointment.findMany({
       where: {
-        dateTime: {
+        day: {
           gte: dayStart,
           lte: dayEnd,
         },

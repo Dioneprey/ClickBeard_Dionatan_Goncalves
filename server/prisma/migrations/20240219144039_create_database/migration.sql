@@ -23,6 +23,7 @@ CREATE TABLE "barbers" (
     "name" TEXT NOT NULL,
     "birthDate" TIMESTAMP(3) NOT NULL,
     "hiringDate" TIMESTAMP(3) NOT NULL,
+    "photo" TEXT,
 
     CONSTRAINT "barbers_pkey" PRIMARY KEY ("id")
 );
@@ -31,6 +32,9 @@ CREATE TABLE "barbers" (
 CREATE TABLE "specialities" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "photo" TEXT,
+    "price" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "time" TEXT NOT NULL DEFAULT '00:00',
 
     CONSTRAINT "specialities_pkey" PRIMARY KEY ("id")
 );
@@ -46,7 +50,8 @@ CREATE TABLE "barber_speacialities" (
 -- CreateTable
 CREATE TABLE "Appointment" (
     "id" TEXT NOT NULL,
-    "dateTime" TIMESTAMP(3) NOT NULL,
+    "day" TIMESTAMP(3) NOT NULL,
+    "hour" TEXT NOT NULL,
     "clientId" TEXT NOT NULL,
     "barberId" TEXT NOT NULL,
     "status" "AppointmentStatus" NOT NULL DEFAULT 'SCHEDULED',

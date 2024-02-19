@@ -41,8 +41,8 @@ export class FetchBarberAvailableSlotsUseCase {
       barberId,
     })
 
-    const reservedSlots = appointmentsInDay.map((appointment) =>
-      dayjs(appointment.dateTime).format('HH:mm'),
+    const reservedSlots = appointmentsInDay.map(
+      (appointment) => appointment.hour,
     )
 
     let startTime = dayjs().hour(8).minute(0) // Define o horário de início às 08:00

@@ -5,6 +5,7 @@ import {
   Body,
   UnauthorizedException,
   BadRequestException,
+  HttpCode,
 } from '@nestjs/common'
 import { ZodValidationPipe } from 'src/infra/http/pipes/zod-validation.pipe'
 
@@ -26,6 +27,7 @@ export class AuthenticateController {
   constructor(private authenticate: AuthenticateUseCase) {}
 
   @Post()
+  @HttpCode(200)
   @UsePipes(new ZodValidationPipe(authenticateBodyBodySchema))
   async handle(@Body() body: AuthenticateBodyBodySchema) {
     const { email, password } = body
