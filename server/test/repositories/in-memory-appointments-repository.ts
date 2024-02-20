@@ -9,6 +9,12 @@ import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointme
 export class InMemoryAppointmentRepository implements AppointmentRepository {
   public items: Appointment[] = []
 
+  async findAllByClientId(clientId: string) {
+    return this.items.filter(
+      (appointment) => appointment.clientId.toString() === clientId,
+    )
+  }
+
   async findAll() {
     return this.items
   }

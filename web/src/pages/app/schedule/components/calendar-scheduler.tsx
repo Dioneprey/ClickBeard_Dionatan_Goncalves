@@ -1,53 +1,37 @@
-import { fetchBarberAvailableSlots } from '@/api/fetch-barber-available-slots'
+import { FetchBarberAvailableSlotsParams } from '@/api/fetch-barber-available-slots'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSchedule } from '@/context/schedule-context'
-import { useMutation } from '@tanstack/react-query'
 import { isBefore, startOfDay } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { useState } from 'react'
 
-export function CalendarScheduler() {
+interface CalendarSchedulerProps {
+  fetchBarberAvailableSlots: ({
+    barberId,
+    date,
+  }: FetchBarberAvailableSlotsParams) => void
+  fetchBarberAvailableSlotsIsLoading: boolean
+}
+
+export function CalendarScheduler({
+  fetchBarberAvailableSlots,
+  fetchBarberAvailableSlotsIsLoading,
+}: CalendarSchedulerProps) {
   const {
     selectedBarber,
     scheduleDateTime,
     toggleScheduleDateTime,
     setScheduleStep,
     availableSlotsInDay,
-    setAvailableSlotsInDay,
   } = useSchedule()
-  const [
-    fetchBarberAvailableSlotsIsLoading,
-    setFetchBarberAvailableSlotsIsLoading,
-  ] = useState(false)
-  const [date, setDate] = useState<Date | undefined>(
-    scheduleDateTime?.date ? new Date(scheduleDateTime?.date) : undefined,
-  )
+
+  const [date, setDate] = useState<Date | undefined>(scheduleDateTime.date)
 
   const disabledDays = (day: Date) => {
     return isBefore(day, startOfDay(new Date()))
   }
-
-  const { mutateAsync: fetchBarberAvailableSlotsFn } = useMutation({
-    mutationFn: fetchBarberAvailableSlots,
-    onMutate: () => {
-      setAvailableSlotsInDay([])
-      setFetchBarberAvailableSlotsIsLoading(true)
-      toggleScheduleDateTime({
-        date: undefined,
-        hourSlot: undefined,
-      })
-    },
-    onSuccess: (data) => {
-      setAvailableSlotsInDay(data)
-
-      setFetchBarberAvailableSlotsIsLoading(false)
-    },
-    onError: () => {
-      setFetchBarberAvailableSlotsIsLoading(false)
-    },
-  })
 
   return (
     <>
@@ -61,9 +45,9 @@ export function CalendarScheduler() {
         onSelect={(e: Date) => {
           if (e) {
             setDate(e)
-            fetchBarberAvailableSlotsFn({
+            fetchBarberAvailableSlots({
               barberId: selectedBarber?.id ?? '',
-              date: e.toISOString(),
+              date: e,
             })
           }
         }}
@@ -89,14 +73,14 @@ export function CalendarScheduler() {
             <div className="flex gap-2 w-full pb-3 overflow-x-auto 2xl:justify-center">
               {availableSlotsInDay.map((slot) => {
                 const isSlotChosed =
-                  scheduleDateTime?.date === date?.toISOString() &&
+                  scheduleDateTime?.date === date &&
                   scheduleDateTime?.hourSlot === slot
 
                 return (
                   <Button
                     onClick={() => {
                       toggleScheduleDateTime({
-                        date: date?.toISOString() ?? '',
+                        date,
                         hourSlot: slot,
                       })
                       setScheduleStep(3)

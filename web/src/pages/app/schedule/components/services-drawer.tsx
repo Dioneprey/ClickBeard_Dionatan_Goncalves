@@ -10,31 +10,22 @@ import {
 import { ChevronUp } from 'lucide-react'
 import { ServiceCard } from './service-card'
 import { Separator } from '@/components/ui/separator'
-import { useEffect, useState } from 'react'
-import {
-  ServiceSummary as ServiceSummaryType,
-  useSchedule,
-} from '@/context/schedule-context'
+import { useSchedule } from '@/context/schedule-context'
 import { ServiceSummary } from './services-summary'
-import { Speciality } from '@/api/fetch-specialities'
+import { useState } from 'react'
+import { Speciality } from '@/@interfaces/Speciality'
 
 export function ServicesDrawer() {
-  const { selectedBarber, selectedServices, servicesSummary } = useSchedule()
+  const { selectedBarber, selectedService } = useSchedule()
   // Pegando valores temporários pois só será salvo caso clique no botão "Continuar" em <ServiceSummary />
-  const [temporaryServices, setTemporaryServices] = useState<Speciality[]>([])
-  const [temporaryServicesSummary, setTemporaryServicesSummary] =
-    useState<ServiceSummaryType>(servicesSummary)
+  const [temporaryService, setTemporaryService] =
+    useState<Speciality>(selectedService)
   const [openServiceDrawer, setOpenServiceDrawer] = useState(false)
-
-  useEffect(() => {
-    setTemporaryServices(selectedServices)
-  }, [selectedServices])
 
   return (
     <Drawer
       onClose={() => {
-        setTemporaryServices(selectedServices)
-        setTemporaryServicesSummary(servicesSummary)
+        setTemporaryService(selectedService)
       }}
       open={openServiceDrawer}
       onOpenChange={setOpenServiceDrawer}
@@ -42,30 +33,29 @@ export function ServicesDrawer() {
       <DrawerTrigger asChild>
         <Button className="w-full">
           <ChevronUp />
-          <span>Selecionar serviços</span>
+          <span>Selecionar serviço</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent className="max-h-[95vh]  justify-center items-center">
         <DrawerHeader className="flex flex-col justify-center items-center">
-          <DrawerTitle>Selecione os serviços</DrawerTitle>
+          <DrawerTitle>Selecione o serviço</DrawerTitle>
         </DrawerHeader>
         <DrawerFooter className="sm:w-[80%] w-[100%] overflow-y-auto flex justify-center items-center">
           <div className="w-full flex justify-center flex-wrap gap-4 overflow-y-auto">
-            {selectedBarber?.specialities.map((barberSpeciality) => (
-              <ServiceCard
-                key={barberSpeciality.id}
-                speciality={barberSpeciality}
-                temporaryServices={temporaryServices}
-                temporaryServicesSummary={temporaryServicesSummary}
-                setTemporaryServices={setTemporaryServices}
-                setTemporaryServicesSummary={setTemporaryServicesSummary}
-              />
-            ))}
+            {selectedBarber?.specialities.map((barberSpeciality) => {
+              return (
+                <ServiceCard
+                  key={barberSpeciality.id}
+                  speciality={barberSpeciality}
+                  temporaryService={temporaryService}
+                  setTemporaryService={setTemporaryService}
+                />
+              )
+            })}
           </div>
           <Separator />
           <ServiceSummary
-            temporaryServices={temporaryServices}
-            temporaryServicesSummary={temporaryServicesSummary}
+            temporaryService={temporaryService}
             setOpenServiceDrawer={setOpenServiceDrawer}
           />
         </DrawerFooter>

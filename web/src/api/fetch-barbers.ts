@@ -1,14 +1,5 @@
 import { api } from '@/lib/axios'
-import { Speciality } from './fetch-specialities'
-
-export interface Barber {
-  id: string
-  name: string
-  photo?: string
-  hiringDate: Date
-  birthDate: Date
-  specialities: Speciality[]
-}
+import { Barber } from '@/@interfaces/Barber'
 
 export async function fetchBarbers() {
   const { data } = await api.get<{ barbers: Barber[] }>('/api/barbers')

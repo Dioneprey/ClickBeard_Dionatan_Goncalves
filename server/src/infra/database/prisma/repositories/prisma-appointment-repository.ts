@@ -15,11 +15,22 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
   async findAll() {
     const appointments = await this.prisma.appointment.findMany({
       include: {
-        AppointmentServices: {
-          select: {
-            service: true,
-          },
-        },
+        Service: true,
+        Barber: true,
+      },
+    })
+
+    return appointments.map(PrismaAppointmentMapper.toDomain)
+  }
+
+  async findAllByClientId(clientId: string) {
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        clientId,
+      },
+      include: {
+        Service: true,
+        Barber: true,
       },
     })
 
@@ -49,22 +60,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
   async create(appointment: Appointment) {
     const data = PrismaAppointmentMapper.toPrisma(appointment)
 
-    const servicesConnect =
-      appointment?.servicesId?.map((service) => {
-        return {
-          serviceId: service.toString(),
-        }
-      }) ?? []
-
     const newAppointment = await this.prisma.appointment.create({
-      data: {
-        ...data,
-        AppointmentServices: {
-          createMany: {
-            data: servicesConnect,
-          },
-        },
-      },
+      data,
     })
 
     return PrismaAppointmentMapper.toDomain(newAppointment)

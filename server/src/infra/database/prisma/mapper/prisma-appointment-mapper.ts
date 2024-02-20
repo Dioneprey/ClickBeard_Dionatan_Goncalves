@@ -2,18 +2,21 @@ import {
   Prisma,
   Appointment as PrismaAppointment,
   Speciality as PrismaSpeciality,
+  Barber as PrismaBarber,
 } from '@prisma/client'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import {
   Appointment,
   AppointmentStatus,
 } from 'src/domain/barbershop/enterprise/entities/appointment'
+import { Barber } from 'src/domain/barbershop/enterprise/entities/barber'
 import { Speciality } from 'src/domain/barbershop/enterprise/entities/speciality'
 
 export class PrismaAppointmentMapper {
   static toDomain(
     raw: PrismaAppointment & {
-      AppointmentServices?: { service: PrismaSpeciality }[]
+      Service?: PrismaSpeciality
+      Barber?: PrismaBarber
     },
   ): Appointment {
     return Appointment.create(
@@ -23,17 +26,24 @@ export class PrismaAppointmentMapper {
         day: raw.day,
         hour: raw.hour,
         status: AppointmentStatus[raw.status],
-        servicesId: raw.AppointmentServices?.map(
-          (barberSpeciality) => new UniqueEntityID(barberSpeciality.service.id),
-        ),
-        services: raw.AppointmentServices?.map((barberSpeciality) =>
+        serviceId: new UniqueEntityID(raw.serviceId),
+        service:
+          raw.Service &&
           Speciality.create({
-            name: barberSpeciality?.service?.name,
-            price: barberSpeciality?.service?.price,
-            time: barberSpeciality?.service?.time,
-            photo: barberSpeciality?.service?.photo ?? undefined,
+            name: raw.Service?.name,
+            price: raw.Service?.price,
+            time: raw.Service?.time,
+            photo: raw.Service?.photo ?? undefined,
           }),
-        ),
+        barber:
+          raw.Barber &&
+          Barber.create(
+            {
+              ...raw.Barber,
+              photo: raw.Barber.photo ?? '',
+            },
+            new UniqueEntityID(raw.Barber.id),
+          ),
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -57,6 +67,7 @@ export class PrismaAppointmentMapper {
       id: appointment.id.toString(),
       barberId: appointment.barberId.toString(),
       clientId: appointment.clientId.toString(),
+      serviceId: appointment.serviceId.toString(),
       day: appointment.day,
       hour: appointment.hour,
       status: appointmentStatus,

@@ -1,14 +1,11 @@
-export enum AppointmentStatus {
-  SCHEDULED = 'scheduled',
-  COMPLETED = 'completed',
-  CANCELLED = 'canceled',
-}
+import { Appointment } from '@/@interfaces/Appointment'
+import { api } from '@/lib/axios'
 
-export interface Apointment {
-  day: Date
-  hour: string
-  clientId: string
-  barberId: string
-  status: AppointmentStatus
-  createdAt: Date
+export async function fetchAppointments() {
+  const { data } = await api.get<{ appointments: Appointment[] }>(
+    '/api/appointments',
+  )
+
+  if (data.appointments) return data.appointments
+  return []
 }

@@ -24,12 +24,15 @@ export class PrismaBarberMapper {
             new UniqueEntityID(barberSpeciality.speciality.id),
         ),
         specialities: raw.BarberSpecialities?.map((barberSpeciality) =>
-          Speciality.create({
-            name: barberSpeciality?.speciality?.name,
-            price: barberSpeciality?.speciality?.price,
-            time: barberSpeciality?.speciality?.time,
-            photo: barberSpeciality?.speciality?.photo ?? undefined,
-          }),
+          Speciality.create(
+            {
+              name: barberSpeciality?.speciality?.name,
+              price: barberSpeciality?.speciality?.price,
+              time: barberSpeciality?.speciality?.time,
+              photo: barberSpeciality?.speciality?.photo ?? undefined,
+            },
+            new UniqueEntityID(barberSpeciality.speciality.id),
+          ),
         ),
       },
       new UniqueEntityID(raw.id),

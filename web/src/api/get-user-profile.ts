@@ -1,6 +1,6 @@
-import { UserData } from '@/context/auth-context'
+import { User } from '@/@interfaces/User'
 import { api } from '@/lib/axios'
 
 export async function getUserProfile() {
-  return await api.get<{ user: UserData }>('/api/accounts')
+  return await api.get<{ user: User }>('/api/accounts')
 }

@@ -1,8 +1,8 @@
 import { api } from '@/lib/axios'
 
-interface FetchBarberAvailableSlotsParams {
+export interface FetchBarberAvailableSlotsParams {
   barberId: string
-  date: string
+  date: Date
 }
 
 export async function fetchBarberAvailableSlots({
@@ -10,7 +10,7 @@ export async function fetchBarberAvailableSlots({
   date,
 }: FetchBarberAvailableSlotsParams) {
   const { data } = await api.get<{ availableSlots: string[] }>(
-    `/api/barbers/available-slots?barberId=${barberId}&date=${date}`,
+    `/api/barbers/available-slots?barberId=${barberId}&date=${date.toISOString()}`,
   )
   await new Promise((resolve) => setTimeout(resolve, 1000))
   return data.availableSlots

@@ -9,27 +9,21 @@ import Cookies from 'js-cookie'
 import { signIn } from '@/api/sign-in'
 import { validateToken } from '@/api/validate-token'
 import { getUserProfile } from '@/api/get-user-profile'
+import { User } from '@/@interfaces/User'
 
 export interface SignInBody {
   email: string
   password: string
 }
 
-export interface UserData {
-  id: string
-  name: string
-  email: string
-  createdAt: Date
-}
-
 interface AuthContextProps {
   status: 'authenticated' | 'unauthenticated' | 'loading'
-  user: UserData
+  user: User
   Logout: () => void
   SignIn: (data: SignInBody) => Promise<void>
 }
 
-const defaultUser: UserData = {
+const defaultUser: User = {
   id: '',
   name: '',
   email: '',
@@ -44,7 +38,7 @@ const AuthContext = createContext<AuthContextProps>({
 })
 
 export function AuthContextProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserData>(defaultUser)
+  const [user, setUser] = useState<User>(defaultUser)
   const [status, setStatus] = useState<
     'authenticated' | 'unauthenticated' | 'loading'
   >('loading')

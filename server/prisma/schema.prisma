@@ -55,8 +55,8 @@ model Speciality {
     price Float   @default(0.0)
     time  String  @default("00:00")
 
-    BarberSpecialities  BarberSpecialities[]
-    AppointmentServices AppointmentServices[]
+    BarberSpecialities BarberSpecialities[]
+    Appointment        Appointment[]
 
     @@map("specialities") // Mapeia para a tabela 'specialities' no banco de dados
 }
@@ -78,22 +78,12 @@ model Appointment {
     hour      String
     clientId  String
     barberId  String
+    serviceId String
     status    AppointmentStatus @default(SCHEDULED)
     createdAt DateTime          @default(now())
     updatedAt DateTime?         @updatedAt
 
-    client              User                  @relation(fields: [clientId], references: [id])
-    barber              Barber                @relation(fields: [barberId], references: [id])
-    AppointmentServices AppointmentServices[]
-}
-
-model AppointmentServices {
-    appointmentId String
-    serviceId     String
-
-    appointment Appointment @relation(fields: [appointmentId], references: [id])
-    service     Speciality  @relation(fields: [serviceId], references: [id])
-
-    @@id([appointmentId, serviceId])
-    @@map("appointment_services")
+    Client  User       @relation(fields: [clientId], references: [id])
+    Service Speciality @relation(fields: [serviceId], references: [id])
+    Barber  Barber     @relation(fields: [barberId], references: [id])
 }

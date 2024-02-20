@@ -1,4 +1,4 @@
-import { Speciality } from '@/api/fetch-specialities'
+import { Speciality } from '@/@interfaces/Speciality'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -8,75 +8,49 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ServiceSummary } from '@/context/schedule-context'
-import { updateServicesSummary } from '@/utils/format-schedule-summary'
 import { formatTime } from '@/utils/format-time-value'
 import { Clock2 } from 'lucide-react'
 
 interface ServiceCardProps {
   speciality: Speciality
-  temporaryServices: Speciality[]
-  temporaryServicesSummary: ServiceSummary
-  setTemporaryServices: React.Dispatch<React.SetStateAction<Speciality[]>>
-  setTemporaryServicesSummary: React.Dispatch<
-    React.SetStateAction<ServiceSummary>
-  >
-}
-
-interface ToggleTemporaryServiceParams {
-  method: 'ADD' | 'REMOVE'
-  speciality: Speciality
+  temporaryService: Speciality
+  setTemporaryService: React.Dispatch<React.SetStateAction<Speciality>>
 }
 
 export function ServiceCard({
   speciality,
-  temporaryServices,
-  setTemporaryServices,
-  setTemporaryServicesSummary,
+  temporaryService,
+  setTemporaryService,
 }: ServiceCardProps) {
   const { id, name, photo, price, time } = speciality
 
-  const serviceIsSelected = temporaryServices.some(
-    (service) => service.id === id,
-  )
+  const serviceIsSelected = temporaryService.id === id
 
-  const method = serviceIsSelected ? 'REMOVE' : 'ADD'
-
-  function toggleTemporaryService({
-    method,
-    speciality,
-  }: ToggleTemporaryServiceParams) {
-    if (method === 'ADD') {
-      setTemporaryServices((prevState) => {
-        const newState = [...prevState, speciality]
-        setTemporaryServicesSummary(updateServicesSummary(newState))
-        return newState
-      })
-    } else if (method === 'REMOVE') {
-      setTemporaryServices((prevState) => {
-        const newState = prevState.filter(
-          (service) => service.id !== speciality.id,
-        )
-        setTemporaryServicesSummary(updateServicesSummary(newState))
-        return newState
-      })
-    }
+  function toggleTemporaryService(speciality: Speciality) {
+    setTemporaryService(speciality)
   }
 
   return (
     <Card
-      onClick={() =>
-        toggleTemporaryService({
-          method,
-          speciality: {
+      onClick={() => {
+        if (serviceIsSelected) {
+          toggleTemporaryService({
+            id: '',
+            name: '',
+            price: 0,
+            time: '',
+            photo: '',
+          })
+        } else {
+          toggleTemporaryService({
             id,
             name,
             photo,
             price,
             time,
-          },
-        })
-      }
+          })
+        }
+      }}
       className={`w-[200px] cursor-pointer ${serviceIsSelected && 'border-primary'}`}
     >
       <CardHeader className="flex p-2 flex-col justify-center items-center gap-2">
@@ -111,7 +85,7 @@ export function ServiceCardOnlyView({ speciality }: ServiceCardOnlyViewProps) {
   const { name, photo, price, time } = speciality
 
   return (
-    <Card className="w-[200px] hover:border-primary">
+    <Card className="w-[200px]">
       <CardHeader className="flex p-2 flex-col justify-center items-center gap-2">
         <Avatar className="h-32 w-full rounded-lg">
           <AvatarImage src={photo} />

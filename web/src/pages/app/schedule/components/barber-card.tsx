@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarberProfileDrawer } from './barber-profile-drawer'
 import { useSchedule } from '@/context/schedule-context'
-import { Barber } from '@/api/fetch-barbers'
+import { Barber } from '@/@interfaces/Barber'
 
 interface BarberCardProps {
   barberData: Barber

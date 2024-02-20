@@ -27,7 +27,7 @@ describe('Fetch available barber slots on the day', () => {
     await inMemoryBarberRepository.create(barber)
 
     const appointment = makeAppointment({
-      day: dayjs().add(1, 'hour').toDate(),
+      day: dayjs().add(1, 'day').startOf('day').toDate(),
       barberId: barber.id,
     })
 

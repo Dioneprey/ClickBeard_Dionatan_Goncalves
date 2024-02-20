@@ -1,51 +1,40 @@
-import { Speciality } from '@/api/fetch-specialities'
+import { Speciality } from '@/@interfaces/Speciality'
 import { Button } from '@/components/ui/button'
-import {
-  ServiceSummary as ServiceSummaryType,
-  useSchedule,
-} from '@/context/schedule-context'
+import { useSchedule } from '@/context/schedule-context'
 import { formatTime } from '@/utils/format-time-value'
 
 interface ServiceSummaryProps {
-  temporaryServices: Speciality[]
-  temporaryServicesSummary: ServiceSummaryType
+  temporaryService: Speciality
   setOpenServiceDrawer: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export function ServiceSummary({
-  temporaryServices,
-  temporaryServicesSummary,
+  temporaryService,
   setOpenServiceDrawer,
 }: ServiceSummaryProps) {
-  const { toggleSelectedServices, setScheduleStep } = useSchedule()
+  const { toggleSelectedService, setScheduleStep } = useSchedule()
 
   return (
     <div className="flex gap-5 items-center">
       <div className="bg-primary h-16 w-16 rounded-full flex items-center justify-center">
         <span className="text-2xl text-white">
-          {temporaryServicesSummary.selectedServicesCount}
+          {temporaryService.id.length > 0 ? '1' : '0'}
         </span>
       </div>
       <div className="flex flex-col">
-        <span>Serviço(s) selecionado(s)</span>
-        <span>
-          Duração: {formatTime(temporaryServicesSummary.selectedServicesTime)}
-        </span>
+        <span>Serviço selecionado</span>
+        <span>Duração: {formatTime(temporaryService.time)}</span>
         <span>
           Valor total:{' '}
           {new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',
-          }).format(temporaryServicesSummary.selectedServicesPrice)}
+          }).format(temporaryService.price)}
         </span>
       </div>
       <Button
-        disabled={temporaryServicesSummary.selectedServicesCount === 0}
         onClick={() => {
-          toggleSelectedServices({
-            speciality: temporaryServices,
-            serviceSummary: temporaryServicesSummary,
-          })
+          toggleSelectedService(temporaryService)
           setScheduleStep(2)
           setOpenServiceDrawer(false)
         }}

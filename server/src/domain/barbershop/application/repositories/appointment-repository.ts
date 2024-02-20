@@ -7,6 +7,7 @@ export interface AppointmentRepositoryFindAllByDayProps {
 
 export abstract class AppointmentRepository {
   abstract findAll(): Promise<Appointment[]>
+  abstract findAllByClientId(clientId: string): Promise<Appointment[]>
   abstract findAllByDay({
     date,
     barberId,

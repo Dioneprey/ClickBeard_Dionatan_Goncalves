@@ -49,7 +49,7 @@ describe('Make Appointment', () => {
         clientId: user.id.toString(),
         day: dayjs().add(3, 'hour').toDate(),
         hour: '14:00',
-        appointmentServices: [speciality.id.toString()],
+        appointmentServiceId: speciality.id.toString(),
       },
     })
 
@@ -84,7 +84,7 @@ describe('Make Appointment', () => {
         clientId: user.id.toString(),
         day: dayjs().add(1, 'day').startOf('day').toDate(),
         hour: '14:00',
-        appointmentServices: [speciality.id.toString()],
+        appointmentServiceId: speciality.id.toString(),
       },
     })
 
@@ -110,7 +110,7 @@ describe('Make Appointment', () => {
         clientId: user.id.toString(),
         day: dayjs().startOf('day').toDate(),
         hour: '22:00',
-        appointmentServices: [speciality.id.toString()],
+        appointmentServiceId: speciality.id.toString(),
       },
     })
 

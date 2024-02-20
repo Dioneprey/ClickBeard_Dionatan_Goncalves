@@ -1,84 +1,76 @@
-import { Barber } from '@/api/fetch-barbers'
-import { Speciality } from '@/api/fetch-specialities'
+import { Barber } from '@/@interfaces/Barber'
+import { Speciality } from '@/@interfaces/Speciality'
+import { makeAppointment } from '@/api/make-appointment'
 import { ReactNode, createContext, useContext, useState } from 'react'
 
-export interface ServiceSummary {
-  selectedServicesCount: number
-  selectedServicesPrice: number
-  selectedServicesTime: string
-}
-
-export interface ToggleSelectedServicesParams {
-  speciality: Speciality[]
-  serviceSummary: ServiceSummary
-}
-
 export interface ScheduleDateTime {
-  date?: string
-  hourSlot?: string
+  date?: Date
+  hourSlot: string
 }
 
 interface ScheduleContextProps {
-  selectedBarber?: Barber
-  selectedServices: Speciality[]
-  servicesSummary: ServiceSummary
-  scheduleDateTime?: ScheduleDateTime
+  selectedBarber: Barber
+  selectedService: Speciality
+  scheduleDateTime: ScheduleDateTime
   scheduleStep: number
   availableSlotsInDay: string[]
   resetSchedule: () => void
   setScheduleStep: React.Dispatch<React.SetStateAction<number>>
-  toggleSelectedServices: ({
-    speciality,
-    serviceSummary,
-  }: ToggleSelectedServicesParams) => void
+  toggleSelectedService: (speciality: Speciality) => void
   setAvailableSlotsInDay: React.Dispatch<React.SetStateAction<string[]>>
   setSelectedBarber: (value: Barber) => void
   toggleScheduleDateTime: ({ date, hourSlot }: ScheduleDateTime) => void
-  handleMakeAppointment: () => void
+  handleMakeAppointment: () => Promise<void>
+}
+
+export const defaultService = {
+  id: '',
+  name: '',
+  price: 0,
+  time: '',
+  photo: '',
+}
+
+export const defaultBarber = {
+  id: '',
+  name: '',
+  birthDate: new Date(),
+  hiringDate: new Date(),
+  specialities: [],
+  photo: '',
+}
+
+export const defaultDateTime = {
+  date: undefined,
+  hourSlot: '',
 }
 
 const ScheduleContext = createContext<ScheduleContextProps>({
-  selectedBarber: undefined,
-  selectedServices: [],
-  servicesSummary: {
-    selectedServicesCount: 0,
-    selectedServicesPrice: 0,
-    selectedServicesTime: '00:00',
-  },
+  selectedBarber: defaultBarber,
+  selectedService: defaultService,
   scheduleStep: 0,
   availableSlotsInDay: [],
-  scheduleDateTime: undefined,
+  scheduleDateTime: defaultDateTime,
   resetSchedule: () => {},
   setScheduleStep: () => {},
   setSelectedBarber: () => {},
-  toggleSelectedServices: () => {},
+  toggleSelectedService: () => {},
   setAvailableSlotsInDay: () => {},
   toggleScheduleDateTime: () => {},
-  handleMakeAppointment: () => {},
+  handleMakeAppointment: async () => {},
 })
 
 export function ScheduleContextProvider({ children }: { children: ReactNode }) {
   const [scheduleStep, setScheduleStep] = useState(0)
-  const [selectedBarber, setSelectedBarber] = useState<Barber | undefined>(
-    undefined,
-  )
-  const [scheduleDateTime, setScheduleDateTime] = useState<
-    ScheduleDateTime | undefined
-  >(undefined)
-  const [selectedServices, setSelectedServices] = useState<Speciality[]>([])
+  const [selectedBarber, setSelectedBarber] = useState<Barber>(defaultBarber)
+  const [scheduleDateTime, setScheduleDateTime] =
+    useState<ScheduleDateTime>(defaultDateTime)
+  const [selectedService, setselectedService] =
+    useState<Speciality>(defaultService)
   const [availableSlotsInDay, setAvailableSlotsInDay] = useState<string[]>([])
-  const [servicesSummary, setServicesSummary] = useState<ServiceSummary>({
-    selectedServicesCount: 0,
-    selectedServicesPrice: 0,
-    selectedServicesTime: '00:00',
-  })
 
-  function toggleSelectedServices({
-    speciality,
-    serviceSummary,
-  }: ToggleSelectedServicesParams) {
-    setSelectedServices(speciality)
-    setServicesSummary(serviceSummary)
+  function toggleSelectedService(speciality: Speciality) {
+    setselectedService(speciality)
   }
 
   function toggleScheduleDateTime({ date, hourSlot }: ScheduleDateTime) {
@@ -86,37 +78,30 @@ export function ScheduleContextProvider({ children }: { children: ReactNode }) {
   }
 
   function resetSchedule() {
-    setSelectedBarber(undefined)
-    setSelectedServices([])
-    setServicesSummary({
-      selectedServicesCount: 0,
-      selectedServicesPrice: 0,
-      selectedServicesTime: '00:00',
-    })
+    setSelectedBarber(defaultBarber)
+    setselectedService(defaultService)
+
     setScheduleStep(0)
-    setScheduleDateTime({
-      date: undefined,
-      hourSlot: undefined,
-    })
+    setScheduleDateTime(defaultDateTime)
     setAvailableSlotsInDay([])
   }
 
-  function handleMakeAppointment() {
+  async function handleMakeAppointment() {
     const appointment = {
-      barberId: selectedBarber?.id,
-      day: scheduleDateTime?.date,
-      hour: scheduleDateTime?.hourSlot,
-      appointmentServices: selectedServices.map((service) => service.id),
+      barberId: selectedBarber.id,
+      day: scheduleDateTime.date ?? new Date(),
+      hour: scheduleDateTime.hourSlot,
+      appointmentServiceId: selectedService?.id,
     }
-    console.log(appointment)
+
+    await makeAppointment(appointment)
   }
 
   return (
     <ScheduleContext.Provider
       value={{
         selectedBarber,
-        selectedServices,
-        servicesSummary,
+        selectedService,
         scheduleDateTime,
         availableSlotsInDay,
         scheduleStep,
@@ -124,7 +109,7 @@ export function ScheduleContextProvider({ children }: { children: ReactNode }) {
         setScheduleStep,
         setSelectedBarber,
         setAvailableSlotsInDay,
-        toggleSelectedServices,
+        toggleSelectedService,
         toggleScheduleDateTime,
         handleMakeAppointment,
       }}

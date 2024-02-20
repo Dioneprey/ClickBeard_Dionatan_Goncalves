@@ -54,19 +54,12 @@ CREATE TABLE "Appointment" (
     "hour" TEXT NOT NULL,
     "clientId" TEXT NOT NULL,
     "barberId" TEXT NOT NULL,
+    "serviceId" TEXT NOT NULL,
     "status" "AppointmentStatus" NOT NULL DEFAULT 'SCHEDULED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "appointment_services" (
-    "appointmentId" TEXT NOT NULL,
-    "serviceId" TEXT NOT NULL,
-
-    CONSTRAINT "appointment_services_pkey" PRIMARY KEY ("appointmentId","serviceId")
 );
 
 -- CreateIndex
@@ -82,10 +75,7 @@ ALTER TABLE "barber_speacialities" ADD CONSTRAINT "barber_speacialities_speciali
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "specialities"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_barberId_fkey" FOREIGN KEY ("barberId") REFERENCES "barbers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "appointment_services" ADD CONSTRAINT "appointment_services_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "Appointment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "appointment_services" ADD CONSTRAINT "appointment_services_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "specialities"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

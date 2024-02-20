@@ -16,7 +16,7 @@ const makeAppointmentBodySchema = z.object({
   barberId: z.string(),
   day: z.coerce.date(),
   hour: z.string(),
-  appointmentServices: z.array(z.string()),
+  appointmentServiceId: z.string(),
 })
 
 type MakeAppointmentBodySchema = z.infer<typeof makeAppointmentBodySchema>
@@ -33,7 +33,7 @@ export class MakeAppointmentController {
   ) {
     const userId = user.sub
 
-    const { barberId, day, hour, appointmentServices } =
+    const { barberId, day, hour, appointmentServiceId } =
       makeAppointmentBodySchema.parse(body)
 
     const result = await this.makeAppointment.execute({
@@ -42,7 +42,7 @@ export class MakeAppointmentController {
         clientId: userId,
         day,
         hour,
-        appointmentServices,
+        appointmentServiceId,
       },
     })
 

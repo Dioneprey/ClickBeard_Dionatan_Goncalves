@@ -11,6 +11,7 @@ import { getAllBarberSlotsInDay } from '../utils/get-all-barber-slots-in-day'
 import { NoMoreSlotsInDayError } from './@errors/no-more-slots-in-day.error'
 import dayjs from 'dayjs'
 import { SlotAlreadyReservedError } from './@errors/slot-already-reserved.error'
+import { InvalidAppointmentSlotError } from './@errors/invalid-appointment-slot.error'
 
 interface MakeAppointmentUseCaseRequest {
   appointment: {
@@ -18,12 +19,15 @@ interface MakeAppointmentUseCaseRequest {
     clientId: string
     day: Date
     hour: string
-    appointmentServices: string[]
+    appointmentServiceId: string
   }
 }
 
 type MakeAppointmentUseCaseResponse = Either<
-  ForbbidenActionError,
+  | ForbbidenActionError
+  | InvalidAppointmentSlotError
+  | NoMoreSlotsInDayError
+  | SlotAlreadyReservedError,
   {
     appointment: Appointment
   }
@@ -40,7 +44,7 @@ export class MakeAppointmentUseCase {
   async execute({
     appointment,
   }: MakeAppointmentUseCaseRequest): Promise<MakeAppointmentUseCaseResponse> {
-    const { barberId, clientId, day, hour, appointmentServices } = appointment
+    const { barberId, clientId, day, hour, appointmentServiceId } = appointment
 
     const [userExists, barberExists] = await Promise.all([
       this.usersRepository.findById(clientId),
@@ -55,7 +59,7 @@ export class MakeAppointmentUseCase {
       barberId,
     })
 
-    if (dayjs(day).isBefore(new Date())) {
+    if (dayjs().isBefore(dayjs().startOf('day'))) {
       return left(
         new NoMoreSlotsInDayError({
           day: dayjs(day).format('DD/MM/YYYY'),
@@ -75,6 +79,12 @@ export class MakeAppointmentUseCase {
       )
     }
 
+    const isSlotValid = allSlotsInDay.filter((time) => time.includes(hour))
+
+    if (isSlotValid.length < 1) {
+      return left(new InvalidAppointmentSlotError(hour))
+    }
+
     const reservedSlots = appointmentsInDay.map(
       (appointment) => appointment.hour,
     )
@@ -88,13 +98,10 @@ export class MakeAppointmentUseCase {
     const newAppointment = Appointment.create({
       barberId: new UniqueEntityID(barberId),
       clientId: new UniqueEntityID(clientId),
+      serviceId: new UniqueEntityID(appointmentServiceId),
       day,
       hour,
     })
-
-    newAppointment.servicesId = appointmentServices.map(
-      (specialityId) => new UniqueEntityID(specialityId),
-    )
 
     await this.appointmentRepository.create(newAppointment)
 
