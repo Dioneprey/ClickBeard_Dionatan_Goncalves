@@ -1,6 +1,7 @@
 import { Entity } from 'src/core/entities/entity'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { Optional } from 'src/core/types/optional'
+import { Speciality } from './speciality'
 
 export enum AppointmentStatus {
   SCHEDULED = 'scheduled',
@@ -14,6 +15,8 @@ export interface AppointmentProps {
   clientId: UniqueEntityID
   barberId: UniqueEntityID
   status: AppointmentStatus
+  servicesId?: UniqueEntityID[]
+  services?: Speciality[]
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -57,6 +60,22 @@ export class Appointment extends Entity<AppointmentProps> {
 
   set status(status: AppointmentStatus) {
     this.props.status = status
+  }
+
+  get servicesId() {
+    return this.props.servicesId
+  }
+
+  set servicesId(servicesId: UniqueEntityID[] | undefined) {
+    this.props.servicesId = servicesId
+  }
+
+  get services() {
+    return this.props.services
+  }
+
+  set services(services: Speciality[] | undefined) {
+    this.props.services = services
   }
 
   get createdAt() {

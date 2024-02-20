@@ -18,6 +18,8 @@ import { FetchBarberAvailableSlotsController } from './controllers/fetch-barber-
 import { FetchBarberAvailableSlotsUseCase } from 'src/domain/barbershop/application/use-cases/fetch-barber-available-slots'
 import { RegisterSpecialityController } from './controllers/register-speciality.controller'
 import { RegisterSpecialityUseCase } from 'src/domain/barbershop/application/use-cases/register-speciality'
+import { MakeAppointmentController } from './controllers/make-appointment.controller'
+import { MakeAppointmentUseCase } from 'src/domain/barbershop/application/use-cases/make-appointment'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -31,6 +33,7 @@ import { RegisterSpecialityUseCase } from 'src/domain/barbershop/application/use
     RegisterBarberController,
     FetchBarberAvailableSlotsController,
     RegisterSpecialityController,
+    MakeAppointmentController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -41,6 +44,7 @@ import { RegisterSpecialityUseCase } from 'src/domain/barbershop/application/use
     RegisterBarberUseCase,
     FetchBarberAvailableSlotsUseCase,
     RegisterSpecialityUseCase,
+    MakeAppointmentUseCase,
   ],
 })
 export class HttpModule {}

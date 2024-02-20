@@ -27,7 +27,7 @@ describe('Fetch available barber slots on the day', () => {
     await inMemoryBarberRepository.create(barber)
 
     const appointment = makeAppointment({
-      dateTime: dayjs().add(1, 'hour').toDate(),
+      day: dayjs().add(1, 'hour').toDate(),
       barberId: barber.id,
     })
 
@@ -38,7 +38,7 @@ describe('Fetch available barber slots on the day', () => {
       barberId: barber.id.toString(),
     })
 
-    const reservedSlots = dayjs(appointment.dateTime).format('HH:mm')
+    const reservedSlots = dayjs(appointment.day).format('HH:mm')
 
     expect(result.isRight).toBeTruthy()
     // horário reservado não deve aparecer nos horários livres

@@ -22,7 +22,6 @@ describe('Fetch all specialities', () => {
     ])
 
     const result = await sut.execute()
-    console.log(inMemorySpecialityRepository.items)
 
     expect(result.isRight()).toBeTruthy()
     expect(result.value?.specialities).toHaveLength(4)

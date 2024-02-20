@@ -7,6 +7,9 @@ import { Appointment } from '../../enterprise/entities/appointment'
 import { AppointmentRepository } from '../repositories/appointment-repository'
 import { ResourceNotFoundError } from './@errors/resource-not-found.error'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
+import { getAllBarberSlotsInDay } from '../utils/get-all-barber-slots-in-day'
+import { NoMoreSlotsInDayError } from './@errors/no-more-slots-in-day.error'
+import dayjs from 'dayjs'
 import { SlotAlreadyReservedError } from './@errors/slot-already-reserved.error'
 
 interface MakeAppointmentUseCaseRequest {
@@ -52,6 +55,26 @@ export class MakeAppointmentUseCase {
       barberId,
     })
 
+    if (dayjs(day).isBefore(new Date())) {
+      return left(
+        new NoMoreSlotsInDayError({
+          day: dayjs(day).format('DD/MM/YYYY'),
+          slot: hour,
+        }),
+      )
+    }
+
+    const allSlotsInDay = getAllBarberSlotsInDay(day)
+
+    if (allSlotsInDay.length === 0) {
+      return left(
+        new NoMoreSlotsInDayError({
+          day: dayjs(day).format('DD/MM/YYYY'),
+          slot: hour,
+        }),
+      )
+    }
+
     const reservedSlots = appointmentsInDay.map(
       (appointment) => appointment.hour,
     )
@@ -68,6 +91,12 @@ export class MakeAppointmentUseCase {
       day,
       hour,
     })
+
+    newAppointment.servicesId = appointmentServices.map(
+      (specialityId) => new UniqueEntityID(specialityId),
+    )
+
+    await this.appointmentRepository.create(newAppointment)
 
     return right({
       appointment: newAppointment,

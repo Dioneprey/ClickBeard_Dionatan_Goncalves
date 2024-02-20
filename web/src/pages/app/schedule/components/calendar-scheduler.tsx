@@ -86,7 +86,7 @@ export function CalendarScheduler() {
               Sem horários livres para o dia e serviço(s) selecionado(s).
             </span>
           ) : (
-            <div className="flex gap-2 w-full pb-3 overflow-x-auto items-center justify-center">
+            <div className="flex gap-2 w-full pb-3 overflow-x-auto 2xl:justify-center">
               {availableSlotsInDay.map((slot) => {
                 const isSlotChosed =
                   scheduleDateTime?.date === date?.toISOString() &&
@@ -102,7 +102,7 @@ export function CalendarScheduler() {
                       setScheduleStep(3)
                     }}
                     key={slot}
-                    className={`cursor-pointer ${isSlotChosed ? 'bg-primary' : 'bg-emerald-500'} hover:bg-primary/80 flex-shrink-0  h-16 w-16 rounded-full flex flex-col  items-center justify-center`}
+                    className={`cursor-pointer ${isSlotChosed ? 'bg-primary' : 'bg-emerald-500'} hover:bg-primary/80 h-16 w-16 rounded-full flex flex-col`}
                   >
                     <span className="text-lg text-white font-semibold">
                       {slot}

@@ -21,7 +21,7 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 
     return this.items.filter(
       (appointment) =>
-        dayjs(appointment.dateTime).isSame(day, 'day') &&
+        dayjs(appointment.day).isSame(day, 'day') &&
         appointment.barberId.toString() === barberId,
     )
   }

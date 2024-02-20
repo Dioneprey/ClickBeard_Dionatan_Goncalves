@@ -8,6 +8,7 @@ export interface BarberProps {
   birthDate: Date
   hiringDate: Date
   photo?: string
+  appointmentsId?: UniqueEntityID[]
   appointments?: Appointment[]
   specialitiesId?: UniqueEntityID[]
   specialities?: Speciality[]
@@ -44,6 +45,14 @@ export class Barber extends Entity<BarberProps> {
 
   set photo(photo: string | undefined) {
     this.props.photo = photo
+  }
+
+  get appointmentsId() {
+    return this.props.appointmentsId
+  }
+
+  set appointmentsId(appointmentsId: UniqueEntityID[] | undefined) {
+    this.props.appointmentsId = appointmentsId
   }
 
   get appointments() {
