@@ -3,6 +3,7 @@ import {
   Appointment as PrismaAppointment,
   Speciality as PrismaSpeciality,
   Barber as PrismaBarber,
+  User as PrismaUser,
 } from '@prisma/client'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import {
@@ -11,12 +12,14 @@ import {
 } from 'src/domain/barbershop/enterprise/entities/appointment'
 import { Barber } from 'src/domain/barbershop/enterprise/entities/barber'
 import { Speciality } from 'src/domain/barbershop/enterprise/entities/speciality'
+import { User, UserRole } from 'src/domain/barbershop/enterprise/entities/user'
 
 export class PrismaAppointmentMapper {
   static toDomain(
     raw: PrismaAppointment & {
       Service?: PrismaSpeciality
       Barber?: PrismaBarber
+      Client?: PrismaUser
     },
   ): Appointment {
     return Appointment.create(
@@ -44,6 +47,15 @@ export class PrismaAppointmentMapper {
             },
             new UniqueEntityID(raw.Barber.id),
           ),
+        client:
+          raw.Client &&
+          User.create(
+            {
+              ...raw.Client,
+              role: UserRole[raw.Client.role],
+            },
+            new UniqueEntityID(raw.Client.id),
+          ),
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -61,7 +73,9 @@ export class PrismaAppointmentMapper {
           ? 'COMPLETED'
           : appointment.status === AppointmentStatus.CANCELLED
             ? 'CANCELLED'
-            : 'CANCELLED'
+            : appointment.status === AppointmentStatus.IN_PROGRESS
+              ? 'IN_PROGRESS'
+              : 'CANCELLED'
 
     return {
       id: appointment.id.toString(),

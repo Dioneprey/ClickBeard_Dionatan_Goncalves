@@ -1,6 +1,7 @@
 import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointment'
 import { SpecialityPresenter } from './speciality-presenter'
 import { BarberPresenter } from './barber-presenter'
+import { UserPresenter } from './user-presenter'
 
 export class AppointmentPresenter {
   static toHTTP(appointment: Appointment | null) {
@@ -9,9 +10,9 @@ export class AppointmentPresenter {
     }
 
     return {
-      id: appointment.id.toString,
-      barberId: appointment.barberId.toString,
-      clientId: appointment.clientId.toString,
+      id: appointment.id.toString(),
+      barberId: appointment.barberId.toString(),
+      clientId: appointment.clientId.toString(),
       day: appointment.day,
       hour: appointment.hour,
       status: appointment.status,
@@ -19,6 +20,7 @@ export class AppointmentPresenter {
       service:
         appointment.service && SpecialityPresenter.toHTTP(appointment.service),
       barber: appointment.barber && BarberPresenter.toHTTP(appointment.barber),
+      client: appointment.client && UserPresenter.toHTTP(appointment.client),
     }
   }
 }

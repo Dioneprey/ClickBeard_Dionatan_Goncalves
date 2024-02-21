@@ -27,6 +27,7 @@ const defaultUser: User = {
   id: '',
   name: '',
   email: '',
+  role: 'client',
   createdAt: new Date(),
 }
 

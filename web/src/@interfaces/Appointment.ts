@@ -1,12 +1,12 @@
 import { Barber } from './Barber'
 import { Speciality } from './Speciality'
+import { User } from './User'
 
-export enum AppointmentStatus {
-  SCHEDULED = 'scheduled',
-  COMPLETED = 'completed',
-  CANCELLED = 'canceled',
-}
-
+export type AppointmentStatus =
+  | 'scheduled'
+  | 'completed'
+  | 'canceled'
+  | 'in_progress'
 export interface Appointment {
   id: string
   barberId: string
@@ -17,4 +17,5 @@ export interface Appointment {
   createdAt: Date
   service: Speciality
   barber: Barber
+  client: User
 }

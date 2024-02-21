@@ -1,4 +1,4 @@
-import { Appointment, AppointmentStatus } from '@/@interfaces/Appointment'
+import { Appointment } from '@/@interfaces/Appointment'
 import {
   DialogContent,
   DialogDescription,
@@ -15,12 +15,18 @@ import {
 } from '@/components/ui/table'
 import { formatTime } from '@/utils/format-time-value'
 import { format } from 'date-fns'
+import { AppointmentStatusIndicator } from './appointment-status'
+import { useAuth } from '@/context/auth-context'
 
 interface AppointmentDetailsProps {
   appointment: Appointment
 }
 
 export function AppointmentDetails({ appointment }: AppointmentDetailsProps) {
+  const { user } = useAuth()
+
+  const isUserAdmin = user.role === 'admin'
+
   return (
     <DialogContent>
       <DialogHeader>
@@ -46,25 +52,7 @@ export function AppointmentDetails({ appointment }: AppointmentDetailsProps) {
             <TableRow>
               <TableCell className="text-muted-foreground">Status</TableCell>
               <TableCell className="flex justify-end">
-                <div className="flex items-center gap-2">
-                  {appointment.status === AppointmentStatus.CANCELLED && (
-                    <span className="h-2 w-2 rounded-full bg-red-500" />
-                  )}
-                  {appointment.status === AppointmentStatus.COMPLETED && (
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  )}
-                  {appointment.status === AppointmentStatus.SCHEDULED && (
-                    <span className="h-2 w-2 rounded-full bg-yellow-400" />
-                  )}
-                  <span className="font-medium text-muted-foreground">
-                    {appointment.status === AppointmentStatus.CANCELLED &&
-                      'Cancelado'}
-                    {appointment.status === AppointmentStatus.COMPLETED &&
-                      'Finalizado'}
-                    {appointment.status === AppointmentStatus.SCHEDULED &&
-                      'Agendado'}
-                  </span>
-                </div>
+                <AppointmentStatusIndicator status={appointment.status} />
               </TableCell>
             </TableRow>
 
@@ -74,6 +62,15 @@ export function AppointmentDetails({ appointment }: AppointmentDetailsProps) {
                 {appointment.barber.name}
               </TableCell>
             </TableRow>
+
+            {isUserAdmin && (
+              <TableRow>
+                <TableCell className="text-muted-foreground">Cliente</TableCell>
+                <TableCell className="flex justify-end">
+                  {appointment.client.name}
+                </TableCell>
+              </TableRow>
+            )}
 
             <TableRow>
               <TableCell className="text-muted-foreground">

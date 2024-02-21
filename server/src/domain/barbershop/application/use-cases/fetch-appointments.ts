@@ -9,12 +9,17 @@ import { UserRole } from '../../enterprise/entities/user'
 
 interface FetchAppointmentsUseCaseRequest {
   userId: string
+  pageIndex: number
+  status?: 'scheduled' | 'completed' | 'canceled' | 'in_progress' | null
 }
 
 type FetchAppointmentsUseCaseResponse = Either<
   ResourceNotFoundError,
   {
     appointments: Appointment[]
+    pageIndex: number
+    totalCount: number
+    totalPages: number
   }
 >
 
@@ -27,6 +32,8 @@ export class FetchAppointmentsUseCase {
 
   async execute({
     userId,
+    pageIndex,
+    status,
   }: FetchAppointmentsUseCaseRequest): Promise<FetchAppointmentsUseCaseResponse> {
     const userExists = await this.usersRepository.findById(userId)
 
@@ -34,16 +41,37 @@ export class FetchAppointmentsUseCase {
       return left(new ResourceNotFoundError(userId))
     }
 
-    let appointments: Appointment[] = []
-
     if (userExists.role === UserRole.ADMIN) {
-      appointments = await this.appointmentRepository.findAll()
-    } else {
-      appointments = await this.appointmentRepository.findAllByClientId(userId)
-    }
+      const findAllAppointmentsResult =
+        await this.appointmentRepository.findAll({
+          pageIndex,
+          filters: {
+            status,
+          },
+        })
 
-    return right({
-      appointments,
-    })
+      return right({
+        appointments: findAllAppointmentsResult.data,
+        pageIndex,
+        totalCount: findAllAppointmentsResult.totalCount,
+        totalPages: findAllAppointmentsResult.totalPages,
+      })
+    } else {
+      const findAllAppointmentsByClientIdResult =
+        await this.appointmentRepository.findAllByClientId({
+          clientId: userId,
+          pageIndex,
+          filters: {
+            status,
+          },
+        })
+
+      return right({
+        appointments: findAllAppointmentsByClientIdResult.data,
+        pageIndex,
+        totalCount: findAllAppointmentsByClientIdResult.totalCount,
+        totalPages: findAllAppointmentsByClientIdResult.totalPages,
+      })
+    }
   }
 }

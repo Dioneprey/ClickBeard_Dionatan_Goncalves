@@ -3,22 +3,25 @@ import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { Optional } from 'src/core/types/optional'
 import { Speciality } from './speciality'
 import { Barber } from './barber'
+import { User } from './user'
 
 export enum AppointmentStatus {
   SCHEDULED = 'scheduled',
   COMPLETED = 'completed',
   CANCELLED = 'canceled',
+  IN_PROGRESS = 'in_progress',
 }
 
 export interface AppointmentProps {
   day: Date
   hour: string
-  clientId: UniqueEntityID
-  barberId: UniqueEntityID
   status: AppointmentStatus
   serviceId: UniqueEntityID
   service?: Speciality
+  barberId: UniqueEntityID
   barber?: Barber
+  clientId: UniqueEntityID
+  client?: User
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -51,12 +54,12 @@ export class Appointment extends Entity<AppointmentProps> {
     this.touch()
   }
 
-  get barberId() {
-    return this.props.barberId
+  get client() {
+    return this.props.client
   }
 
-  set barberId(barberId: UniqueEntityID) {
-    this.props.barberId = barberId
+  set client(client: User | undefined) {
+    this.props.client = client
     this.touch()
   }
 
@@ -84,6 +87,15 @@ export class Appointment extends Entity<AppointmentProps> {
 
   set service(service: Speciality | undefined) {
     this.props.service = service
+    this.touch()
+  }
+
+  get barberId() {
+    return this.props.barberId
+  }
+
+  set barberId(barberId: UniqueEntityID) {
+    this.props.barberId = barberId
     this.touch()
   }
 
@@ -116,7 +128,7 @@ export class Appointment extends Entity<AppointmentProps> {
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
-        status: AppointmentStatus.SCHEDULED,
+        status: props.status ?? AppointmentStatus.SCHEDULED,
       },
       id,
     )

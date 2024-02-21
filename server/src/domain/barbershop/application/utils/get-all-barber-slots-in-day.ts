@@ -4,7 +4,7 @@ dayjs.extend(isToday)
 
 export function getAllBarberSlotsInDay(date: Date) {
   let startTime = dayjs().hour(8).minute(0) // Define o horário de início às 08:00
-  const endTime = dayjs().hour(18).minute(0) // Define o horário de término às 18:00
+  const endTime = dayjs().hour(17).minute(30) // O horário de término é às 18:00, portanto o ultimo horário disponível para atendimento é às 17:30
   const searchDate = dayjs(date).startOf('day')
   const currentDate = dayjs()
 

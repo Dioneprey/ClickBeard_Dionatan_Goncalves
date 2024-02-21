@@ -11,33 +11,39 @@ import { AppointmentTableRow } from './components/appointment-table-row'
 import { Pagination } from '@/components/ui/pagination'
 import { useQuery } from '@tanstack/react-query'
 import { fetchAppointments } from '@/api/fetch-appointments'
-import { AppointmentStatus } from '@/@interfaces/Appointment'
-import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { z } from 'zod'
+import { useAuth } from '@/context/auth-context'
 
 export function Appointments() {
-  const { data: appointments } = useQuery({
-    queryKey: ['appointments'],
-    queryFn: fetchAppointments,
+  const { user } = useAuth()
+
+  const isUserAdmin = user.role === 'admin'
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const status = searchParams.get('status')
+
+  const pageIndex = z.coerce
+    .number()
+    .transform((page) => page - 1)
+    .parse(searchParams.get('page') ?? '1')
+
+  const { data: result } = useQuery({
+    queryKey: ['appointments', pageIndex, status],
+    queryFn: () =>
+      fetchAppointments({
+        pageIndex,
+        status: status === 'all' ? null : status,
+      }),
   })
 
-  const [filteredAppointments, setFilteredAppointments] = useState(appointments)
+  function handlePagination(pageIndex: number) {
+    setSearchParams((state) => {
+      state.set('page', (pageIndex + 1).toString())
 
-  // Atualize o estado sempre que appointments mudar.
-  useEffect(() => {
-    setFilteredAppointments(appointments)
-  }, [appointments])
-
-  function handleFilterAppointments(
-    status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'all',
-  ) {
-    if (status === 'all') {
-      setFilteredAppointments(appointments)
-    } else {
-      const newFilteredAppointments = appointments?.filter(
-        (appointment) => appointment.status === AppointmentStatus[status],
-      )
-      setFilteredAppointments(newFilteredAppointments)
-    }
+      return state
+    })
   }
 
   return (
@@ -49,9 +55,7 @@ export function Appointments() {
         </h1>
 
         <div className="space-y-2.5">
-          <AppointmentTableFilters
-            filterAppointments={handleFilterAppointments}
-          />
+          <AppointmentTableFilters />
           <div className="rounded-md bAppointment">
             <Table>
               <TableHeader>
@@ -63,6 +67,7 @@ export function Appointments() {
                   <TableHead className="w-[100px]">Horário</TableHead>
                   <TableHead className="w-[140px]">Status</TableHead>
                   <TableHead>Barbeiro</TableHead>
+                  {isUserAdmin && <TableHead>Cliente</TableHead>}
                   <TableHead className="w-[180px]">Valor do serviço</TableHead>
                   <TableHead className="w-[160px]">
                     Duração do serviço
@@ -73,8 +78,8 @@ export function Appointments() {
               </TableHeader>
 
               <TableBody>
-                {filteredAppointments &&
-                  filteredAppointments.map((appointment) => {
+                {result?.appointments &&
+                  result?.appointments.map((appointment) => {
                     return (
                       <AppointmentTableRow
                         key={appointment.id}
@@ -86,9 +91,10 @@ export function Appointments() {
             </Table>
           </div>
           <Pagination
-            pageIndex={0}
-            totalCount={filteredAppointments ? filteredAppointments.length : 0}
-            perPage={10}
+            onPageChange={handlePagination}
+            pageIndex={result?.meta?.pageIndex ?? 0}
+            totalCount={result?.meta?.totalCount ?? 0}
+            totalPages={result?.meta?.totalPages ?? 1}
           />
         </div>
       </div>

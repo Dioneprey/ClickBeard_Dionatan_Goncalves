@@ -2,44 +2,124 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import {
   AppointmentRepository,
+  AppointmentRepositoryFindAllByClientIdParams,
   AppointmentRepositoryFindAllByDayProps,
+  AppointmentRepositoryFindAllParams,
 } from 'src/domain/barbershop/application/repositories/appointment-repository'
 import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointment'
 import { PrismaAppointmentMapper } from '../mapper/prisma-appointment-mapper'
 import dayjs from 'dayjs'
+import { AppointmentStatus } from '@prisma/client'
+import { InjectQueue } from '@nestjs/bull'
+import { Queue } from 'bull'
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @InjectQueue('appointment-processor')
+    private handleappointmentStatusQueue: Queue,
+  ) {}
 
-  async findAll() {
-    const appointments = await this.prisma.appointment.findMany({
-      include: {
-        Service: true,
-        Barber: true,
+  async findById(appointmentId: string) {
+    const appointment = await this.prisma.appointment.findFirst({
+      where: {
+        id: appointmentId,
       },
     })
 
-    return appointments.map(PrismaAppointmentMapper.toDomain)
+    if (!appointment) {
+      return null
+    }
+
+    return PrismaAppointmentMapper.toDomain(appointment)
   }
 
-  async findAllByClientId(clientId: string) {
-    const appointments = await this.prisma.appointment.findMany({
-      where: {
-        clientId,
-      },
-      include: {
-        Service: true,
-        Barber: true,
-      },
-    })
+  async findAll({ pageIndex, filters }: AppointmentRepositoryFindAllParams) {
+    const status =
+      filters?.status === 'completed'
+        ? AppointmentStatus.COMPLETED
+        : filters?.status === 'canceled'
+          ? AppointmentStatus.CANCELLED
+          : filters?.status === 'scheduled'
+            ? AppointmentStatus.SCHEDULED
+            : undefined
 
-    return appointments.map(PrismaAppointmentMapper.toDomain)
+    const [appointments, totalCount] = await Promise.all([
+      this.prisma.appointment.findMany({
+        where: {
+          status,
+        },
+        include: {
+          Service: true,
+          Barber: true,
+          Client: true,
+        },
+        skip: pageIndex * 10,
+        take: 10,
+      }),
+      this.prisma.appointment.count({
+        where: {
+          status,
+        },
+      }),
+    ])
+
+    const totalPages = Math.ceil(totalCount / 10)
+
+    return {
+      data: appointments.map(PrismaAppointmentMapper.toDomain),
+      pageIndex,
+      totalCount,
+      totalPages,
+    }
+  }
+
+  async findAllByClientId({
+    clientId,
+    pageIndex,
+    filters,
+  }: AppointmentRepositoryFindAllByClientIdParams) {
+    const status = filters?.status
+      ? AppointmentStatus[filters?.status]
+      : undefined
+
+    const [appointments, totalCount] = await Promise.all([
+      this.prisma.appointment.findMany({
+        where: {
+          status,
+          clientId,
+        },
+        include: {
+          Service: true,
+          Barber: true,
+          Client: true,
+        },
+        skip: pageIndex * 10,
+        take: 10,
+      }),
+      this.prisma.appointment.count({
+        where: {
+          status,
+          clientId,
+        },
+      }),
+    ])
+
+    const totalPages = Math.ceil(totalCount / 10)
+
+    return {
+      data: appointments.map(PrismaAppointmentMapper.toDomain),
+      pageIndex,
+      totalCount,
+      totalPages,
+    }
   }
 
   async findAllByDay({
     date,
     barberId,
+    onlyPendents,
   }: AppointmentRepositoryFindAllByDayProps) {
     const dayStart = dayjs(date).startOf('day').toDate()
     const dayEnd = dayjs(date).endOf('day').toDate()
@@ -51,6 +131,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
           lte: dayEnd,
         },
         barberId,
+        status: onlyPendents ? 'SCHEDULED' : undefined,
       },
     })
 
@@ -63,6 +144,22 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
     const newAppointment = await this.prisma.appointment.create({
       data,
     })
+
+    await this.handleappointmentStatusQueue.add(
+      'notify-start-of-schedule-appointment',
+      appointment.client?.email,
+      {
+        delay: 4000,
+      },
+    )
+
+    await this.handleappointmentStatusQueue.add(
+      'start-schedule-appointment',
+      appointment.id.toString(),
+      {
+        delay: 8000,
+      },
+    )
 
     return PrismaAppointmentMapper.toDomain(newAppointment)
   }

@@ -3,7 +3,7 @@ version: '3'
 services:
   # Application
   database:
-    container_name: nest-prazer-oculto-database
+    container_name: nest-click-beard-database
     image: 'bitnami/postgresql'
     ports:
       - '5445:5432'
@@ -13,6 +13,17 @@ services:
     volumes:
       - 'postgresql_data:/bitnami/postgresql'
 
+  redis:
+    image: redis:latest
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
 volumes:
   postgresql_data:
+    driver: local
+  redis_data:
     driver: local

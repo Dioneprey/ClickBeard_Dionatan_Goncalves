@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
 import { UsersRepository } from 'src/domain/barbershop/application/repositories/users-repository'
 import { PrismaUsersRepository } from './prisma/repositories/prisma-user-repository'
@@ -8,8 +8,10 @@ import { SpecialityRepository } from 'src/domain/barbershop/application/reposito
 import { PrismaSpecialityRepository } from './prisma/repositories/prisma-speciality-repository'
 import { PrismaAppointmentRepository } from './prisma/repositories/prisma-appointment-repository'
 import { AppointmentRepository } from 'src/domain/barbershop/application/repositories/appointment-repository'
+import { BullConfigModule } from '../schedules/bull/bull.module'
 
 @Module({
+  imports: [forwardRef(() => BullConfigModule)],
   providers: [
     PrismaService,
     {

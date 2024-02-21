@@ -3,22 +3,42 @@ import {
   Controller,
   Get,
   NotFoundException,
+  Query,
 } from '@nestjs/common'
 import { ResourceNotFoundError } from 'src/domain/barbershop/application/use-cases/@errors/resource-not-found.error'
 import { FetchAppointmentsUseCase } from 'src/domain/barbershop/application/use-cases/fetch-appointments'
 import { CurrentUser } from 'src/infra/auth/current-user.decorator'
 import { UserPayload } from 'src/infra/auth/jwt.strategy'
 import { AppointmentPresenter } from '../presenters/appointments-presenter'
+import { z } from 'zod'
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe'
 
+const fetchAppointmentsQuerySchema = z.object({
+  pageIndex: z.coerce.number().optional().nullable(),
+  status: z
+    .enum(['scheduled', 'completed', 'canceled', 'in_progress'])
+    .optional()
+    .nullable(),
+})
+
+type FetchAppointmentsQuerySchema = z.infer<typeof fetchAppointmentsQuerySchema>
+const queryValidationPipe = new ZodValidationPipe(fetchAppointmentsQuerySchema)
 @Controller('/appointments')
 export class FetchAppointmentsController {
   constructor(private fetchAppointments: FetchAppointmentsUseCase) {}
 
   @Get()
-  async handle(@CurrentUser() user: UserPayload) {
+  async handle(
+    @Query(queryValidationPipe) query: FetchAppointmentsQuerySchema,
+    @CurrentUser() user: UserPayload,
+  ) {
+    const { pageIndex, status } = fetchAppointmentsQuerySchema.parse(query)
+
     const userId = user.sub
     const result = await this.fetchAppointments.execute({
       userId,
+      pageIndex: pageIndex ?? 0,
+      status,
     })
 
     if (result.isLeft()) {
@@ -33,9 +53,16 @@ export class FetchAppointmentsController {
     }
 
     const appointments = result.value.appointments
+    const totalCount = result.value.totalCount
+    const totalPages = result.value.totalPages
 
     return {
       appointments: appointments.map(AppointmentPresenter.toHTTP),
+      meta: {
+        pageIndex,
+        totalCount,
+        totalPages,
+      },
     }
   }
 }

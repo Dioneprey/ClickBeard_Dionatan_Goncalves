@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import {
   AppointmentRepository,
+  AppointmentRepositoryFindAllByClientIdParams,
   AppointmentRepositoryFindAllByDayProps,
 } from 'src/domain/barbershop/application/repositories/appointment-repository'
 
@@ -9,14 +10,28 @@ import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointme
 export class InMemoryAppointmentRepository implements AppointmentRepository {
   public items: Appointment[] = []
 
-  async findAllByClientId(clientId: string) {
-    return this.items.filter(
+  async findAllByClientId({
+    clientId,
+  }: AppointmentRepositoryFindAllByClientIdParams) {
+    const appointments = this.items.filter(
       (appointment) => appointment.clientId.toString() === clientId,
     )
+
+    return {
+      data: appointments,
+      pageIndex: 0,
+      totalCount: this.items.length,
+      totalPages: 0,
+    }
   }
 
   async findAll() {
-    return this.items
+    return {
+      data: this.items,
+      pageIndex: 0,
+      totalCount: this.items.length,
+      totalPages: 0,
+    }
   }
 
   async findAllByDay({
