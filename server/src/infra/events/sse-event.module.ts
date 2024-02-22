@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common'
-import { SseService } from './sse-event.service'
-import { SseEventController } from './event.controller'
+
+import { AppointmentsSseEventController } from './appointments-sse-event.controller'
+import { SSEService } from './sse-service'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
 @Module({
-  providers: [SseService],
-  controllers: [SseEventController],
+  imports: [EventEmitterModule.forRoot()],
+  controllers: [AppointmentsSseEventController],
+  providers: [SSEService],
+  exports: [SSEService],
 })
-export class SseModule {}
+export class EventsModule {}

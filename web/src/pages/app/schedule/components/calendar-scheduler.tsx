@@ -28,6 +28,7 @@ export function CalendarScheduler({
   } = useSchedule()
 
   const [date, setDate] = useState<Date | undefined>(scheduleDateTime.date)
+  console.log(availableSlotsInDay)
 
   const disabledDays = (day: Date) => {
     return isBefore(day, startOfDay(new Date()))

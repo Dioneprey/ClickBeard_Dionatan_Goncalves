@@ -9,9 +9,10 @@ import { PrismaSpecialityRepository } from './prisma/repositories/prisma-special
 import { PrismaAppointmentRepository } from './prisma/repositories/prisma-appointment-repository'
 import { AppointmentRepository } from 'src/domain/barbershop/application/repositories/appointment-repository'
 import { BullConfigModule } from '../schedules/bull/bull.module'
+import { EventsModule } from '../events/sse-event.module'
 
 @Module({
-  imports: [forwardRef(() => BullConfigModule)],
+  imports: [EventsModule, forwardRef(() => BullConfigModule)],
   providers: [
     PrismaService,
     {

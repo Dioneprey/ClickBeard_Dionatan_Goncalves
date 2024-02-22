@@ -14,6 +14,8 @@ import { fetchAppointments } from '@/api/fetch-appointments'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 import { useAuth } from '@/context/auth-context'
+import { appointmentsEventSource } from '@/lib/sse-event-source'
+import { queryClient } from '@/lib/react-query'
 
 export function Appointments() {
   const { user } = useAuth()
@@ -28,6 +30,16 @@ export function Appointments() {
     .number()
     .transform((page) => page - 1)
     .parse(searchParams.get('page') ?? '1')
+
+  appointmentsEventSource.onmessage = (event) => {
+    if (event.data === 'change-appointment') {
+      if (pageIndex === 0) {
+        queryClient.invalidateQueries({
+          queryKey: ['appointments'],
+        })
+      }
+    }
+  }
 
   const { data: result } = useQuery({
     queryKey: ['appointments', pageIndex, status],

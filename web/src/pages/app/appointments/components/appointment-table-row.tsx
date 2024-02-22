@@ -24,12 +24,17 @@ import { formatTime } from '@/utils/format-time-value'
 import { useAuth } from '@/context/auth-context'
 import { ptBR } from 'date-fns/locale'
 import { AppointmentStatusIndicator } from './appointment-status'
+import { useMutation } from '@tanstack/react-query'
+import { cancelAppointment } from '@/api/cancel-appointment'
+import { queryClient } from '@/lib/react-query'
+import { useState } from 'react'
 
 interface AppointmentTableRowProps {
   appointment: Appointment
 }
 
 export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const { user } = useAuth()
 
   const isUserAdmin = user.role === 'admin'
@@ -50,7 +55,17 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
   )
 
   const diffInHours = diffInMilliseconds / (1000 * 60 * 60)
-  const isMoreThanTwoHours = diffInHours > 2
+  const isLessThanTwoHours = diffInHours < 2
+
+  const { mutateAsync: cancelAppointmentFn } = useMutation({
+    mutationFn: cancelAppointment,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ['appointments'],
+      })
+      setCancelDialogOpen(false)
+    },
+  })
 
   return (
     <TableRow>
@@ -91,9 +106,13 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
         {format(appointment?.createdAt, 'dd/MM/yyyy HH:mm')}
       </TableCell>
       <TableCell>
-        <Dialog>
+        <Dialog onOpenChange={setCancelDialogOpen} open={cancelDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="xs">
+            <Button
+              disabled={appointment.status !== 'scheduled'}
+              variant="ghost"
+              size="xs"
+            >
               <X className="mr-2 h-3 w-3" />
               Cancelar
             </Button>
@@ -121,7 +140,7 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
                   </TableRow>
                 </TableBody>
               </Table>
-              {!isMoreThanTwoHours && (
+              {isLessThanTwoHours && (
                 <span className="text-rose-400 text-sm">
                   Agendamentos com menos de 2 horas de antecedência não podem
                   ser cancelados.
@@ -131,7 +150,16 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
                 <DialogClose asChild>
                   <Button variant="outline">Voltar</Button>
                 </DialogClose>
-                <Button disabled={!isMoreThanTwoHours}>Confirmar</Button>
+                <Button
+                  onClick={() =>
+                    cancelAppointmentFn({
+                      appointmentId: appointment.id,
+                    })
+                  }
+                  disabled={isLessThanTwoHours}
+                >
+                  Confirmar
+                </Button>
               </DialogFooter>
             </DialogHeader>
           </DialogContent>

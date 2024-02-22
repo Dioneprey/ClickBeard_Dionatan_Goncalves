@@ -77,12 +77,9 @@ export function Schedule() {
         toast.error(
           'Horário não está mais disponível, por favor, escolha outro.',
         )
-        fetchBarberAvailableSlotsFn({
-          barberId: selectedBarber.id,
-          date: scheduleDateTime.date ?? new Date(),
-        })
+        setAvailableSlotsInDay([])
         toggleScheduleDateTime({
-          date: scheduleDateTime.date,
+          date: undefined,
           hourSlot: '',
         })
         setScheduleStep(2)

@@ -3,12 +3,37 @@ import {
   AppointmentRepository,
   AppointmentRepositoryFindAllByClientIdParams,
   AppointmentRepositoryFindAllByDayProps,
+  AppointmentRepositoryFindByIdParams,
 } from 'src/domain/barbershop/application/repositories/appointment-repository'
 
 import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointment'
 
 export class InMemoryAppointmentRepository implements AppointmentRepository {
   public items: Appointment[] = []
+
+  async findById({
+    appointmentId,
+    userId,
+  }: AppointmentRepositoryFindByIdParams) {
+    let appointment
+    if (userId) {
+      appointment = this.items.find(
+        (item) =>
+          item.id.toString() === appointmentId &&
+          item.clientId.toString() === userId,
+      )
+    } else {
+      appointment = this.items.find(
+        (item) => item.id.toString() === appointmentId,
+      )
+    }
+
+    if (!appointment) {
+      return null
+    }
+
+    return appointment
+  }
 
   async findAllByClientId({
     clientId,

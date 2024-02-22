@@ -5,6 +5,7 @@ import {
   AppointmentRepositoryFindAllByClientIdParams,
   AppointmentRepositoryFindAllByDayProps,
   AppointmentRepositoryFindAllParams,
+  AppointmentRepositoryFindByIdParams,
 } from 'src/domain/barbershop/application/repositories/appointment-repository'
 import { Appointment } from 'src/domain/barbershop/enterprise/entities/appointment'
 import { PrismaAppointmentMapper } from '../mapper/prisma-appointment-mapper'
@@ -12,19 +13,25 @@ import dayjs from 'dayjs'
 import { AppointmentStatus } from '@prisma/client'
 import { InjectQueue } from '@nestjs/bull'
 import { Queue } from 'bull'
+import { SSEService } from 'src/infra/events/sse-service'
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
   constructor(
     private prisma: PrismaService,
+    private sseService: SSEService,
     @InjectQueue('appointment-processor')
     private handleappointmentStatusQueue: Queue,
   ) {}
 
-  async findById(appointmentId: string) {
+  async findById({
+    appointmentId,
+    userId,
+  }: AppointmentRepositoryFindByIdParams) {
     const appointment = await this.prisma.appointment.findFirst({
       where: {
         id: appointmentId,
+        clientId: userId,
       },
     })
 
@@ -145,19 +152,36 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
       data,
     })
 
+    this.sseService.emitEvent('change-appointment')
+
+    // Pegando delay de uma hora antes do agendamento para mandar notificação
+
+    const oneHourBeforeAppointment = new Date(
+      appointment.day.getTime() - 60 * 60 * 1000,
+    )
+
+    const notifyAppointmentDelay =
+      oneHourBeforeAppointment.getTime() - Date.now()
+
     await this.handleappointmentStatusQueue.add(
       'notify-start-of-schedule-appointment',
       appointment.client?.email,
       {
-        delay: 4000,
+        delay: notifyAppointmentDelay,
       },
     )
+
+    // Pegando delay da hora exata do agendamento para iniciar agendamento
+
+    const appointmentTime = appointment.day.getTime()
+
+    const startScheduleDelay = appointmentTime - Date.now()
 
     await this.handleappointmentStatusQueue.add(
       'start-schedule-appointment',
       appointment.id.toString(),
       {
-        delay: 8000,
+        delay: startScheduleDelay,
       },
     )
 
@@ -173,6 +197,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
       },
       data,
     })
+
+    this.sseService.emitEvent('change-appointment')
 
     return PrismaAppointmentMapper.toDomain(updatedAppointment)
   }

@@ -15,8 +15,6 @@ export class HandleAppointmentStatusProcessor {
 
   @Process('notify-start-of-schedule-appointment')
   async notifyStartOfAppointment({ data: clientEmail }: Job<string>) {
-    console.log('notify chedule queue')
-
     await this.sendEmail.send({
       message: 'Seu agendamento na clickBeard começará em uma hora',
       recipientEmail: clientEmail,
@@ -25,8 +23,9 @@ export class HandleAppointmentStatusProcessor {
 
   @Process('start-schedule-appointment')
   async startAppointment({ data: appointmentId }: Job<string>) {
-    const appointment = await this.appointmentRepository.findById(appointmentId)
-    console.log('start chedule queue')
+    const appointment = await this.appointmentRepository.findById({
+      appointmentId,
+    })
 
     if (!appointment) return
     appointment.status = AppointmentStatus.IN_PROGRESS
@@ -44,8 +43,9 @@ export class HandleAppointmentStatusProcessor {
 
   @Process('complete-schedule-appointment')
   async endAppointment({ data: appointmentId }: Job<string>) {
-    console.log('end chedule queue')
-    const appointment = await this.appointmentRepository.findById(appointmentId)
+    const appointment = await this.appointmentRepository.findById({
+      appointmentId,
+    })
 
     if (!appointment) return
     appointment.status = AppointmentStatus.COMPLETED

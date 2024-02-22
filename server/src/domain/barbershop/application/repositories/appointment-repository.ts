@@ -18,8 +18,16 @@ export interface AppointmentRepositoryFindAllByClientIdParams
   extends PaginationProps<AppointmentFilters> {
   clientId: string
 }
+
+export interface AppointmentRepositoryFindByIdParams {
+  appointmentId: string
+  userId?: string
+}
 export abstract class AppointmentRepository {
-  abstract findById(appointmentId: string): Promise<Appointment | null>
+  abstract findById({
+    appointmentId,
+    userId,
+  }: AppointmentRepositoryFindByIdParams): Promise<Appointment | null>
 
   abstract findAll({
     pageIndex,

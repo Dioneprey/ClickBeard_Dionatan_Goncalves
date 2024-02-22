@@ -38,6 +38,7 @@ export class FetchBarberAvailableSlotsUseCase {
     const appointmentsInDay = await this.appointmentRepository.findAllByDay({
       date,
       barberId,
+      onlyPendents: true,
     })
 
     const reservedSlots = appointmentsInDay.map(

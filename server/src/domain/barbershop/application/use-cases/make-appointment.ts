@@ -67,6 +67,7 @@ export class MakeAppointmentUseCase {
     const appointmentsInDay = await this.appointmentRepository.findAllByDay({
       date: updatedAppointmentDate,
       barberId,
+      onlyPendents: true,
     })
 
     // Verifica se a data de agendamento é anterior a hoje
@@ -92,6 +93,7 @@ export class MakeAppointmentUseCase {
     }
 
     const isSlotValid = allSlotsInDay.filter((time) => time.includes(hour))
+
     // Horário passado está fora do horário de funcionamento da barbearia, ou não há mais horários livres
     if (isSlotValid.length < 1) {
       return left(new InvalidAppointmentSlotError(hour))

@@ -5,12 +5,11 @@ import { EnvService } from 'src/infra/env/env.service'
 import { HandleAppointmentStatusProcessor } from './processor/appointment-processor'
 import { DatabaseModule } from 'src/infra/database/database.module'
 import { MailModule } from 'src/infra/mail/mail.module'
-import { SseModule } from 'src/infra/events/sse-event.module'
 
 @Module({
   imports: [
     forwardRef(() => DatabaseModule),
-    SseModule,
+
     MailModule,
     BullModule.forRootAsync({
       imports: [EnvModule],

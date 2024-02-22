@@ -22,6 +22,8 @@ import { MakeAppointmentController } from './controllers/make-appointment.contro
 import { MakeAppointmentUseCase } from 'src/domain/barbershop/application/use-cases/make-appointment'
 import { FetchAppointmentsController } from './controllers/fetch-appointments.controller'
 import { FetchAppointmentsUseCase } from 'src/domain/barbershop/application/use-cases/fetch-appointments'
+import { CancelAppointmentUseCase } from 'src/domain/barbershop/application/use-cases/cancel-appointment'
+import { CancelAppointmentController } from './controllers/cancel-appointment.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -37,6 +39,7 @@ import { FetchAppointmentsUseCase } from 'src/domain/barbershop/application/use-
     RegisterSpecialityController,
     MakeAppointmentController,
     FetchAppointmentsController,
+    CancelAppointmentController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -49,6 +52,7 @@ import { FetchAppointmentsUseCase } from 'src/domain/barbershop/application/use-
     RegisterSpecialityUseCase,
     MakeAppointmentUseCase,
     FetchAppointmentsUseCase,
+    CancelAppointmentUseCase,
   ],
 })
 export class HttpModule {}
