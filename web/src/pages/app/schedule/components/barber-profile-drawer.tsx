@@ -15,12 +15,18 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { ServiceCardOnlyView } from './service-card'
 import { Barber } from '@/@interfaces/Barber'
+import { useAuth } from '@/context/auth-context'
+import { HandleRegistrationBarber } from '@/components/handle-registration-barber'
 
 interface BarberProfileDrawerProps {
   barberData: Barber
 }
 
 export function BarberProfileDrawer({ barberData }: BarberProfileDrawerProps) {
+  const { user } = useAuth()
+
+  const isAdmin = user.role === 'admin'
+
   const { name, photo, hiringDate, birthDate, specialities } = barberData
 
   return (
@@ -53,11 +59,21 @@ export function BarberProfileDrawer({ barberData }: BarberProfileDrawerProps) {
             </DrawerDescription>
           </div>
         </DrawerHeader>
-        <DrawerFooter className="sm:w-[80%] w-[100%] flex justify-center items-center">
-          <div className="flex justify-between items-center gap-2">
-            <Button className="w-[100px] text-center">Especialidades</Button>
-          </div>
+        <DrawerFooter className="sm:w-[80%] w-[100%] flex gap-5 justify-center items-center">
+          {isAdmin && (
+            <div className="flex justify-between items-center">
+              <Button className="w-[100px] text-center">
+                <HandleRegistrationBarber
+                  isUpdate={true}
+                  barberData={barberData}
+                />
+              </Button>
+            </div>
+          )}
           <Separator className="w-full" />
+          <div className="flex justify-between items-center">
+            <span className="w-[100px] text-center">Especialidades</span>
+          </div>
           <div className="w-full flex justify-center flex-wrap gap-4 overflow-y-auto">
             {barberData?.specialities.map((barberSpeciality) => {
               return (

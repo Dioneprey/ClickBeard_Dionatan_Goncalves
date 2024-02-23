@@ -19,6 +19,7 @@ const fetchAppointmentsQuerySchema = z.object({
     .enum(['scheduled', 'completed', 'canceled', 'in_progress'])
     .optional()
     .nullable(),
+  date: z.coerce.date().optional(),
 })
 
 type FetchAppointmentsQuerySchema = z.infer<typeof fetchAppointmentsQuerySchema>
@@ -32,13 +33,15 @@ export class FetchAppointmentsController {
     @Query(queryValidationPipe) query: FetchAppointmentsQuerySchema,
     @CurrentUser() user: UserPayload,
   ) {
-    const { pageIndex, status } = fetchAppointmentsQuerySchema.parse(query)
+    const { pageIndex, status, date } =
+      fetchAppointmentsQuerySchema.parse(query)
 
     const userId = user.sub
     const result = await this.fetchAppointments.execute({
       userId,
       pageIndex: pageIndex ?? 0,
       status,
+      date,
     })
 
     if (result.isLeft()) {

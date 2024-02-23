@@ -15,10 +15,14 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { fetchBarberAvailableSlots } from '@/api/fetch-barber-available-slots'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { Barber } from '@/@interfaces/Barber'
+import { useAuth } from '@/context/auth-context'
 
 export function Schedule() {
+  const { user } = useAuth()
+  const isAdmin = user.role === 'admin'
+
   const navigate = useNavigate()
 
   const {
@@ -97,129 +101,132 @@ export function Schedule() {
     },
   })
 
-  return (
-    <>
-      <Helmet title="Marcar horário" />
-      <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">
-        Escolha um profissional
-      </h1>
-      <div className="flex flex-col gap-5 mt-10 justify-center items-center">
-        <ScrollArea className="w-full pb-5">
-          {isLoadingFetchBarbers ? (
-            <>
-              <div className="flex gap-5 justify-center items-center">
-                {Array.from({ length: 3 }, (_, index) => (
-                  <Skeleton
-                    className="w-[300px] py-5 h-[280px] rounded-lg"
-                    key={index + 1}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              {
-                // @ts-expect-error possible undefine
-                barbers?.length < 1 ? (
-                  <div className="flex flex-col gap-5 justify-center items-center mt-[200px]">
-                    <Frown className="h-16 w-16" />
-                    <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-                      Ops, parece que não foi cadastrado nenhum profissional.
-                    </h2>
-                  </div>
-                ) : (
-                  <div className="flex gap-5 justify-center items-center">
-                    {barbers?.map((barber: Barber) => (
-                      <BarberCard key={barber.id} barberData={barber} />
-                    ))}
-                    <ScrollBar orientation="horizontal" />
-                  </div>
-                )
-              }
-            </>
-          )}
-        </ScrollArea>
-
-        {selectedBarber.name.length > 0 && (
-          <div className="flex flex-col items-center gap-5">
-            {scheduleStep >= 2 && (
-              <Button
-                onClick={() => {
-                  setScheduleStep((prevState) => prevState - 1)
-                }}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <span>
-                  <ChevronLeft />
-                </span>
-                <span>Voltar</span>
-              </Button>
+  if (isAdmin) {
+    return <Navigate to="/" replace />
+  } else
+    return (
+      <>
+        <Helmet title="Marcar horário" />
+        <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">
+          Escolha um profissional
+        </h1>
+        <div className="flex flex-col gap-5 mt-10 justify-center items-center">
+          <ScrollArea className="w-full pb-5">
+            {isLoadingFetchBarbers ? (
+              <>
+                <div className="flex gap-5 justify-center items-center">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <Skeleton
+                      className="w-[300px] py-5 h-[280px] rounded-lg"
+                      key={index + 1}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {
+                  // @ts-expect-error possible undefine
+                  barbers?.length < 1 ? (
+                    <div className="flex flex-col gap-5 justify-center items-center mt-[200px]">
+                      <Frown className="h-16 w-16" />
+                      <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+                        Ops, parece que não foi cadastrado nenhum profissional.
+                      </h2>
+                    </div>
+                  ) : (
+                    <div className="flex gap-5 justify-center items-center">
+                      {barbers?.map((barber: Barber) => (
+                        <BarberCard key={barber.id} barberData={barber} />
+                      ))}
+                      <ScrollBar orientation="horizontal" />
+                    </div>
+                  )
+                }
+              </>
             )}
-            <MultiStepSchedule />
-            <Button onClick={() => resetSchedule()} variant="outline">
-              <Eraser />
-            </Button>
-          </div>
-        )}
+          </ScrollArea>
 
-        {scheduleStep === 1 && selectedBarber && (
-          <div className="space-y-5">
-            <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-              Escolha o serviço
-            </h2>
-            <ServicesDrawer />
-          </div>
-        )}
-        {scheduleStep === 2 && selectedService && (
-          <CalendarScheduler
-            fetchBarberAvailableSlots={fetchBarberAvailableSlotsFn}
-            fetchBarberAvailableSlotsIsLoading={
-              fetchBarberAvailableSlotsIsLoading
-            }
-          />
-        )}
-
-        {scheduleStep === 3 && scheduleDateTime?.date && (
-          <div className="flex p-10 border rounded-xl flex-col items-center justify-center">
-            <span className="text-2xl font-bold">CONFIRME SUA RESERVA</span>
-            <span className="mb-5">Verifique se está tudo certo</span>
-            <span className="flex items-center gap-1">
-              <span>
-                <CalendarDays />
-              </span>
-              <span className="font-semibold">
-                {format(scheduleDateTime.date, 'EEEE', {
-                  // @ts-expect-error tipagem de import
-                  locale: ptBR,
-                }).toLocaleUpperCase()}
-              </span>
-            </span>
-            <span className="text-xl font-bold">
-              {format(scheduleDateTime.date, 'dd/MM/yyyy')} -{' '}
-              {scheduleDateTime.hourSlot}
-            </span>
-            <span>
-              <span>Profissional:</span>{' '}
-              <span className="font-bold"> {selectedBarber?.name}</span>
-            </span>
-            <span>
-              Serviço:{' '}
-              <span className="font-semibold">{selectedService.name}</span>{' '}
-              (duração : {selectedService.time}h)
-            </span>
-            <div className="w-full mt-5">
-              <Button
-                disabled={makeAppointmentLoading}
-                onClick={() => handleMakeAppointmentMutation()}
-                className="w-full"
-              >
-                Confirmar
+          {selectedBarber.name.length > 0 && (
+            <div className="flex flex-col items-center gap-5">
+              {scheduleStep >= 2 && (
+                <Button
+                  onClick={() => {
+                    setScheduleStep((prevState) => prevState - 1)
+                  }}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <span>
+                    <ChevronLeft />
+                  </span>
+                  <span>Voltar</span>
+                </Button>
+              )}
+              <MultiStepSchedule />
+              <Button onClick={() => resetSchedule()} variant="outline">
+                <Eraser />
               </Button>
             </div>
-          </div>
-        )}
-      </div>
-    </>
-  )
+          )}
+
+          {scheduleStep === 1 && selectedBarber && (
+            <div className="space-y-5">
+              <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+                Escolha o serviço
+              </h2>
+              <ServicesDrawer />
+            </div>
+          )}
+          {scheduleStep === 2 && selectedService && (
+            <CalendarScheduler
+              fetchBarberAvailableSlots={fetchBarberAvailableSlotsFn}
+              fetchBarberAvailableSlotsIsLoading={
+                fetchBarberAvailableSlotsIsLoading
+              }
+            />
+          )}
+
+          {scheduleStep === 3 && scheduleDateTime?.date && (
+            <div className="flex p-10 border rounded-xl flex-col items-center justify-center">
+              <span className="text-2xl font-bold">CONFIRME SUA RESERVA</span>
+              <span className="mb-5">Verifique se está tudo certo</span>
+              <span className="flex items-center gap-1">
+                <span>
+                  <CalendarDays />
+                </span>
+                <span className="font-semibold">
+                  {format(scheduleDateTime.date, 'EEEE', {
+                    // @ts-expect-error tipagem de import
+                    locale: ptBR,
+                  }).toLocaleUpperCase()}
+                </span>
+              </span>
+              <span className="text-xl font-bold">
+                {format(scheduleDateTime.date, 'dd/MM/yyyy')} -{' '}
+                {scheduleDateTime.hourSlot}
+              </span>
+              <span>
+                <span>Profissional:</span>{' '}
+                <span className="font-bold"> {selectedBarber?.name}</span>
+              </span>
+              <span>
+                Serviço:{' '}
+                <span className="font-semibold">{selectedService.name}</span>{' '}
+                (duração : {selectedService.time}h)
+              </span>
+              <div className="w-full mt-5">
+                <Button
+                  disabled={makeAppointmentLoading}
+                  onClick={() => handleMakeAppointmentMutation()}
+                  className="w-full"
+                >
+                  Confirmar
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </>
+    )
 }

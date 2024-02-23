@@ -52,10 +52,22 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             ? AppointmentStatus.SCHEDULED
             : undefined
 
+    const date = filters?.date
+
+    const startOfDay = dayjs(date).startOf('day').toDate()
+
+    const endOfDay = dayjs(date).endOf('day').toDate()
+
     const [appointments, totalCount] = await Promise.all([
       this.prisma.appointment.findMany({
         where: {
           status,
+          day: date
+            ? {
+                gte: startOfDay,
+                lte: endOfDay,
+              }
+            : undefined,
         },
         include: {
           Service: true,
@@ -91,11 +103,20 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
       ? AppointmentStatus[filters?.status]
       : undefined
 
+    const date = filters?.date
+
+    const startOfDay = dayjs(date).startOf('day').toDate()
+
+    const endOfDay = dayjs(date).endOf('day').toDate()
+
     const [appointments, totalCount] = await Promise.all([
       this.prisma.appointment.findMany({
         where: {
           status,
-          clientId,
+          day: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
         },
         include: {
           Service: true,
@@ -170,6 +191,17 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
         delay: notifyAppointmentDelay,
       },
     )
+
+    if (notifyAppointmentDelay > 0) {
+      // Agendar a notificação, pois há mais de uma hora até o agendamento.
+      await this.handleappointmentStatusQueue.add(
+        'notify-start-of-schedule-appointment',
+        appointment.client?.email,
+        {
+          delay: notifyAppointmentDelay,
+        },
+      )
+    }
 
     // Pegando delay da hora exata do agendamento para iniciar agendamento
 

@@ -9,9 +9,10 @@ import { SpecialityRepository } from '../repositories/speciality-repository'
 import { ResourceNotFoundError } from './@errors/resource-not-found.error'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 
-interface RegisterBarberUseCaseRequest {
+interface UpdateBarberUseCaseRequest {
   userId: string
   barberData: {
+    id: string
     name: string
     hiringDate: Date
     birthDate: Date
@@ -20,7 +21,7 @@ interface RegisterBarberUseCaseRequest {
   }
 }
 
-type RegisterBarberUseCaseResponse = Either<
+type UpdateBarberUseCaseResponse = Either<
   ForbbidenActionError | ResourceNotFoundError,
   {
     barber: Barber
@@ -28,7 +29,7 @@ type RegisterBarberUseCaseResponse = Either<
 >
 
 @Injectable()
-export class RegisterBarberUseCase {
+export class UpdateBarberUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private barberRepository: BarberRepository,
@@ -38,15 +39,22 @@ export class RegisterBarberUseCase {
   async execute({
     userId,
     barberData,
-  }: RegisterBarberUseCaseRequest): Promise<RegisterBarberUseCaseResponse> {
-    const userExists = await this.usersRepository.findById(userId)
+  }: UpdateBarberUseCaseRequest): Promise<UpdateBarberUseCaseResponse> {
+    const [userExists, barberExists] = await Promise.all([
+      this.usersRepository.findById(userId),
+      this.barberRepository.findById(barberData.id),
+    ])
 
     // Verifying if user has permission to create a barber
     if (userExists?.role !== UserRole.ADMIN) {
       return left(new ForbbidenActionError())
     }
 
-    const { name, hiringDate, birthDate, photo, specialities } = barberData
+    if (!barberExists) {
+      return left(new ResourceNotFoundError(barberData.id))
+    }
+
+    const { name, hiringDate, birthDate, specialities } = barberData
 
     const specialitiesExists = await Promise.all(
       specialities.map(async (specialityId) => {
@@ -76,21 +84,18 @@ export class RegisterBarberUseCase {
       )
     }
 
-    const barber = Barber.create({
-      name,
-      hiringDate,
-      birthDate,
-      photo,
-    })
+    barberExists.name = name
+    barberExists.hiringDate = hiringDate
+    barberExists.birthDate = birthDate
 
-    barber.specialitiesId = specialities.map(
+    barberExists.specialitiesId = specialities.map(
       (specialityId) => new UniqueEntityID(specialityId),
     )
 
-    await this.barberRepository.create(barber)
+    await this.barberRepository.save(barberExists)
 
     return right({
-      barber,
+      barber: barberExists,
     })
   }
 }

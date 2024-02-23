@@ -19,6 +19,7 @@ export interface SignInBody {
 interface AuthContextProps {
   status: 'authenticated' | 'unauthenticated' | 'loading'
   user: User
+  updateProfile: (userData: User) => void
   Logout: () => void
   SignIn: (data: SignInBody) => Promise<void>
 }
@@ -34,6 +35,7 @@ const defaultUser: User = {
 const AuthContext = createContext<AuthContextProps>({
   status: 'loading',
   user: defaultUser,
+  updateProfile: () => {},
   Logout: () => {},
   SignIn: async () => {},
 })
@@ -63,6 +65,10 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function updateProfile(userData: User) {
+    setUser(userData)
+  }
+
   async function SignIn({ email, password }: SignInBody) {
     try {
       const { data } = await signIn({ email, password })
@@ -88,7 +94,9 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ status, user, SignIn, Logout }}>
+    <AuthContext.Provider
+      value={{ status, user, updateProfile, SignIn, Logout }}
+    >
       {children}
     </AuthContext.Provider>
   )

@@ -4,6 +4,7 @@ import { api } from '@/lib/axios'
 export interface FetchAppointmentsQuery {
   pageIndex?: number | null
   status?: string | null
+  date?: string
 }
 
 interface FetchAppointmentsResponse {
@@ -18,6 +19,7 @@ interface FetchAppointmentsResponse {
 export async function fetchAppointments({
   pageIndex,
   status,
+  date,
 }: FetchAppointmentsQuery) {
   const { data } = await api.get<FetchAppointmentsResponse>(
     '/api/appointments',
@@ -25,6 +27,7 @@ export async function fetchAppointments({
       params: {
         pageIndex,
         status,
+        date,
       },
     },
   )

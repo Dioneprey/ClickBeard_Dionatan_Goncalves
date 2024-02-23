@@ -1,4 +1,10 @@
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -6,13 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { CalendarIcon, Search, X } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
 const ordersFiltersSchema = z.object({
   status: z.string().optional(),
+  date: z.coerce.date().optional(),
 })
 
 type OrderFiltersSchema = z.infer<typeof ordersFiltersSchema>
@@ -21,21 +30,29 @@ export function AppointmentTableFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const status = searchParams.get('status')
+  const date = searchParams.get('date')
 
   const { handleSubmit, reset, control } = useForm<OrderFiltersSchema>({
     defaultValues: {
       status: status ?? 'all',
+      date: date ? new Date(date) : undefined,
     },
   })
 
   function handleFilter(data: OrderFiltersSchema) {
     const status = data.status?.toString()
+    const date = data.date?.toString()
 
     setSearchParams((prev) => {
       if (status) {
         prev.set('status', status)
       } else {
         prev.delete('status')
+      }
+      if (date) {
+        prev.set('date', date)
+      } else {
+        prev.delete('date')
       }
 
       prev.set('page', '1')
@@ -47,6 +64,7 @@ export function AppointmentTableFilters() {
   function handleClearFilters() {
     setSearchParams((prev) => {
       prev.delete('status')
+      prev.delete('date')
       prev.set('page', '1')
 
       return prev
@@ -54,6 +72,7 @@ export function AppointmentTableFilters() {
 
     reset({
       status: 'all',
+      date: undefined,
     })
   }
 
@@ -89,11 +108,40 @@ export function AppointmentTableFilters() {
           )
         }}
       />
+      <Controller
+        control={control}
+        name="date"
+        render={({ field: { onChange, value } }) => {
+          return (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'w-[240px] pl-3 text-left font-normal',
+                    !value && 'text-muted-foreground',
+                  )}
+                >
+                  {value ? format(value, 'PPP') : <span>Selecionar data</span>}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={value}
+                  onSelect={onChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          )
+        }}
+      />
       <Button type="submit" variant="secondary" size="xs">
         <Search className="mr-2 h-4 w-4" />
         Filtrar resultados
       </Button>
-
       <Button
         type="button"
         variant="outline"

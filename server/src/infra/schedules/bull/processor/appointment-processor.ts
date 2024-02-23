@@ -26,17 +26,20 @@ export class HandleAppointmentStatusProcessor {
     const appointment = await this.appointmentRepository.findById({
       appointmentId,
     })
+    console.log('Começou às: ', new Date())
 
     if (!appointment) return
     appointment.status = AppointmentStatus.IN_PROGRESS
 
     await this.appointmentRepository.save(appointment)
 
+    const thirtyMinuteDelay = 30 * 60 * 1000
+
     await this.handleappointmentStatusQueue.add(
       'complete-schedule-appointment',
       appointment.id.toString(),
       {
-        delay: 4000,
+        delay: thirtyMinuteDelay,
       },
     )
   }
@@ -46,6 +49,8 @@ export class HandleAppointmentStatusProcessor {
     const appointment = await this.appointmentRepository.findById({
       appointmentId,
     })
+
+    console.log('Finzalizou às: ', new Date())
 
     if (!appointment) return
     appointment.status = AppointmentStatus.COMPLETED

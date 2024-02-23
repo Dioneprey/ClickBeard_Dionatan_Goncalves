@@ -9,6 +9,7 @@ export interface AppointmentRepositoryFindAllByDayProps {
 
 export interface AppointmentFilters {
   status?: 'scheduled' | 'completed' | 'canceled' | 'in_progress' | null
+  date?: Date
 }
 
 export interface AppointmentRepositoryFindAllParams

@@ -9,10 +9,11 @@ import { ResourceNotFoundError } from './@errors/resource-not-found.error'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { getAllBarberSlotsInDay } from '../utils/get-all-barber-slots-in-day'
 import { NoMoreSlotsInDayError } from './@errors/no-more-slots-in-day.error'
-import { parseISO, setHours, setMinutes } from 'date-fns'
+import { format, parseISO, setHours, setMinutes } from 'date-fns'
 import dayjs from 'dayjs'
 import { SlotAlreadyReservedError } from './@errors/slot-already-reserved.error'
 import { InvalidAppointmentSlotError } from './@errors/invalid-appointment-slot.error'
+import { SendEmail } from '../mail/send-email'
 
 interface MakeAppointmentUseCaseRequest {
   appointment: {
@@ -40,6 +41,7 @@ export class MakeAppointmentUseCase {
     private usersRepository: UsersRepository,
     private barberRepository: BarberRepository,
     private appointmentRepository: AppointmentRepository,
+    private sendEmail: SendEmail,
   ) {}
 
   async execute({
@@ -119,6 +121,11 @@ export class MakeAppointmentUseCase {
     })
 
     await this.appointmentRepository.create(newAppointment)
+
+    this.sendEmail.send({
+      recipientEmail: userExists.email,
+      message: `Olá, ${userExists.name}! Seu agendamento com o barbeiro ${barberExists.name} no dia ${format(day, 'dd/MM/yyyy')} às ${hour} foi realizado com sucesso`,
+    })
 
     return right({
       appointment: newAppointment,

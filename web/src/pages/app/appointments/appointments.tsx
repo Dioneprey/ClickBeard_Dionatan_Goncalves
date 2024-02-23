@@ -25,6 +25,7 @@ export function Appointments() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const status = searchParams.get('status')
+  const date = searchParams.get('date')
 
   const pageIndex = z.coerce
     .number()
@@ -42,11 +43,12 @@ export function Appointments() {
   }
 
   const { data: result } = useQuery({
-    queryKey: ['appointments', pageIndex, status],
+    queryKey: ['appointments', pageIndex, status, date],
     queryFn: () =>
       fetchAppointments({
         pageIndex,
         status: status === 'all' ? null : status,
+        date: date ?? undefined,
       }),
   })
 
@@ -77,7 +79,7 @@ export function Appointments() {
                     Data do atendimento
                   </TableHead>
                   <TableHead className="w-[100px]">Horário</TableHead>
-                  <TableHead className="w-[140px]">Status</TableHead>
+                  <TableHead className="w-[160px]">Status</TableHead>
                   <TableHead>Barbeiro</TableHead>
                   {isUserAdmin && <TableHead>Cliente</TableHead>}
                   <TableHead className="w-[180px]">Valor do serviço</TableHead>

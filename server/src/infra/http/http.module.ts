@@ -24,9 +24,15 @@ import { FetchAppointmentsController } from './controllers/fetch-appointments.co
 import { FetchAppointmentsUseCase } from 'src/domain/barbershop/application/use-cases/fetch-appointments'
 import { CancelAppointmentUseCase } from 'src/domain/barbershop/application/use-cases/cancel-appointment'
 import { CancelAppointmentController } from './controllers/cancel-appointment.controller'
+import { MailModule } from '../mail/mail.module'
+import { UploadBarberImageController } from './controllers/upload-barber-image.controller'
+import { StorageModule } from '../storage/storage.module'
+import { UploadBarberImageUseCase } from 'src/domain/barbershop/application/use-cases/upload-barber-image'
+import { UploadSpecialityImageController } from './controllers/upload-speciality-image.controller'
+import { UploadSpecialityImageUseCase } from 'src/domain/barbershop/application/use-cases/upload-speciality-image'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule],
+  imports: [DatabaseModule, CryptographyModule, MailModule, StorageModule],
   controllers: [
     HomeController,
     AuthenticateController,
@@ -40,6 +46,8 @@ import { CancelAppointmentController } from './controllers/cancel-appointment.co
     MakeAppointmentController,
     FetchAppointmentsController,
     CancelAppointmentController,
+    UploadBarberImageController,
+    UploadSpecialityImageController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -53,6 +61,8 @@ import { CancelAppointmentController } from './controllers/cancel-appointment.co
     MakeAppointmentUseCase,
     FetchAppointmentsUseCase,
     CancelAppointmentUseCase,
+    UploadBarberImageUseCase,
+    UploadSpecialityImageUseCase,
   ],
 })
 export class HttpModule {}

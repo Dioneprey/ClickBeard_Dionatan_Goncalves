@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
+import fastifyMultipart from '@fastify/multipart'
 import { ConfigService } from '@nestjs/config'
 import { Env } from './env/env'
 import { EnvService } from './env/env.service'
@@ -19,6 +20,8 @@ async function bootstrap() {
     methods: ['POST', 'PUT', 'PATCH', 'DELETE', 'GET'],
     credentials: true,
   })
+
+  await app.register(fastifyMultipart)
 
   const envService = app.get<ConfigService<Env, true>>(EnvService)
   const port = envService.get('PORT')

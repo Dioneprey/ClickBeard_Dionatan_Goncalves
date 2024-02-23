@@ -5,43 +5,45 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Post,
+  Patch,
 } from '@nestjs/common'
-import { RegisterBarberUseCase } from 'src/domain/barbershop/application/use-cases/register-barber'
 import { CurrentUser } from 'src/infra/auth/current-user.decorator'
 import { UserPayload } from 'src/infra/auth/jwt.strategy'
 import { ForbbidenActionError } from 'src/domain/barbershop/application/use-cases/@errors/forbbiden-action.error'
 import { Roles } from 'src/infra/auth/role.decorator'
 import { UserRole } from 'src/domain/barbershop/enterprise/entities/user'
+import { UpdateBarberUseCase } from 'src/domain/barbershop/application/use-cases/update-barber'
 
-const registerBarberBodySchema = z.object({
+const updateBarberBodySchema = z.object({
+  id: z.string(),
   name: z.string(),
   hiringDate: z.coerce.date(),
   birthDate: z.coerce.date(),
   specialities: z.array(z.string()),
 })
 
-type RegisterBarberBodySchema = z.infer<typeof registerBarberBodySchema>
-const bodyValidationPipe = new ZodValidationPipe(registerBarberBodySchema)
+type UpdateBarberBodySchema = z.infer<typeof updateBarberBodySchema>
+const bodyValidationPipe = new ZodValidationPipe(updateBarberBodySchema)
 
 @Controller('/barbers')
-export class RegisterBarberController {
-  constructor(private readonly registerBarber: RegisterBarberUseCase) {}
+export class UpdateBarberController {
+  constructor(private readonly updateBarber: UpdateBarberUseCase) {}
 
-  @Post()
+  @Patch()
   @Roles(UserRole.ADMIN)
   async handle(
     @CurrentUser() user: UserPayload,
-    @Body(bodyValidationPipe) body: RegisterBarberBodySchema,
+    @Body(bodyValidationPipe) body: UpdateBarberBodySchema,
   ) {
     const userId = user.sub
 
-    const { name, hiringDate, birthDate, specialities } =
-      registerBarberBodySchema.parse(body)
+    const { id, name, hiringDate, birthDate, specialities } =
+      updateBarberBodySchema.parse(body)
 
-    const result = await this.registerBarber.execute({
+    const result = await this.updateBarber.execute({
       userId,
       barberData: {
+        id,
         name,
         hiringDate,
         birthDate,

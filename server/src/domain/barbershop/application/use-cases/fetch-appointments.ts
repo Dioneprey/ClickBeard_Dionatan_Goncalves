@@ -11,6 +11,7 @@ interface FetchAppointmentsUseCaseRequest {
   userId: string
   pageIndex: number
   status?: 'scheduled' | 'completed' | 'canceled' | 'in_progress' | null
+  date?: Date
 }
 
 type FetchAppointmentsUseCaseResponse = Either<
@@ -34,6 +35,7 @@ export class FetchAppointmentsUseCase {
     userId,
     pageIndex,
     status,
+    date,
   }: FetchAppointmentsUseCaseRequest): Promise<FetchAppointmentsUseCaseResponse> {
     const userExists = await this.usersRepository.findById(userId)
 
@@ -47,6 +49,7 @@ export class FetchAppointmentsUseCase {
           pageIndex,
           filters: {
             status,
+            date,
           },
         })
 

@@ -2,6 +2,7 @@ import { Entity } from 'src/core/entities/entity'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { Appointment } from './appointment'
 import { Speciality } from './speciality'
+import { Optional } from 'src/core/types/optional'
 
 export interface BarberProps {
   name: string
@@ -79,8 +80,17 @@ export class Barber extends Entity<BarberProps> {
     this.props.specialities = specialities
   }
 
-  static create(props: BarberProps, id?: UniqueEntityID) {
-    const barber = new Barber(props, id)
+  static create(
+    props: Optional<BarberProps, 'hiringDate'>,
+    id?: UniqueEntityID,
+  ) {
+    const barber = new Barber(
+      {
+        ...props,
+        hiringDate: props.hiringDate ?? new Date(),
+      },
+      id,
+    )
 
     return barber
   }

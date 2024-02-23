@@ -11,11 +11,12 @@ import { CurrentUser } from 'src/infra/auth/current-user.decorator'
 import { UserPayload } from 'src/infra/auth/jwt.strategy'
 import { RegisterSpecialityUseCase } from 'src/domain/barbershop/application/use-cases/register-speciality'
 import { ForbbidenActionError } from 'src/domain/barbershop/application/use-cases/@errors/forbbiden-action.error'
+import { Roles } from 'src/infra/auth/role.decorator'
+import { UserRole } from 'src/domain/barbershop/enterprise/entities/user'
 
 const registerSpecialityBodySchema = z.object({
   name: z.string(),
   price: z.number(),
-  time: z.string(),
   photo: z.string().optional(),
 })
 
@@ -27,27 +28,27 @@ export class RegisterSpecialityController {
   constructor(private readonly registerSpeciality: RegisterSpecialityUseCase) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
   async handle(
     @CurrentUser() user: UserPayload,
     @Body(bodyValidationPipe) body: RegisterSpecialityBodySchema,
   ) {
     const userId = user.sub
 
-    const { name, price, time, photo } =
-      registerSpecialityBodySchema.parse(body)
+    const { name, price, photo } = registerSpecialityBodySchema.parse(body)
 
     const result = await this.registerSpeciality.execute({
       userId,
       specialityData: {
         name,
         price,
-        time,
         photo,
       },
     })
 
     if (result.isLeft()) {
       const error = result.value
+      console.log(error)
 
       switch (error.constructor) {
         case ForbbidenActionError:
@@ -55,6 +56,12 @@ export class RegisterSpecialityController {
         default:
           throw new BadRequestException(error.message)
       }
+    }
+
+    const speciality = result.value.speciality
+
+    return {
+      specialityId: speciality.id.toString(),
     }
   }
 }

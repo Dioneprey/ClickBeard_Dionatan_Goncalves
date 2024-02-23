@@ -13,7 +13,6 @@ interface RegisterSpecialityUseCaseRequest {
     name: string
     photo?: string
     price: number
-    time: string
   }
 }
 
@@ -42,12 +41,12 @@ export class RegisterSpecialityUseCase {
       return left(new ForbbidenActionError())
     }
 
-    const { name, price, time, photo } = specialityData
+    const { name, price, photo } = specialityData
 
     const speciality = Speciality.create({
       name,
       price,
-      time,
+      time: '00:30',
       photo,
     })
 

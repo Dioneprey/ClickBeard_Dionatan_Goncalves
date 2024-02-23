@@ -7,18 +7,21 @@ import { Barber } from '@/@interfaces/Barber'
 
 interface BarberCardProps {
   barberData: Barber
+  onlyView?: boolean
 }
 
-export function BarberCard({ barberData }: BarberCardProps) {
+export function BarberCard({ barberData, onlyView }: BarberCardProps) {
   const { selectedBarber, setSelectedBarber, setScheduleStep, resetSchedule } =
     useSchedule()
   const { id, name, photo } = barberData
   return (
     <Card
       onClick={() => {
-        resetSchedule()
-        setSelectedBarber(barberData)
-        setScheduleStep(1)
+        if (!onlyView) {
+          resetSchedule()
+          setSelectedBarber(barberData)
+          setScheduleStep(1)
+        }
       }}
       className={`w-[300px] py-5 cursor-pointer ${selectedBarber?.id === id && 'border-primary'}`}
     >

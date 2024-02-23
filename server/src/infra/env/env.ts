@@ -11,6 +11,10 @@ export const envSchema = z.object({
   MAIL_PASSWORD: z.string(),
   REDIS_HOST: z.string().optional().default('localhost'),
   REDIS_PORT: z.coerce.number().optional().default(6379),
+  AWS_BUCKET_NAME: z.string(),
+  AWS_BUCKET_ENDPOINT: z.string(),
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY_ID: z.string(),
   PORT: z.coerce.number().optional().default(3333),
 })
 

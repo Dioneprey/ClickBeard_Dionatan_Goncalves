@@ -17,7 +17,7 @@ export function HomeItemsCard({
 }: HomeItemsCardProps) {
   return (
     <Link to={`/${href}`}>
-      <Card className="w-[250px] cursor-pointer">
+      <Card className="w-[280px] cursor-pointer">
         <CardHeader>
           <CardTitle className="flex flex-col justify-center items-center gap-2">
             {icon}
