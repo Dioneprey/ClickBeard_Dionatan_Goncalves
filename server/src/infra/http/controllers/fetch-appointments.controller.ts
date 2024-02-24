@@ -37,6 +37,7 @@ export class FetchAppointmentsController {
       fetchAppointmentsQuerySchema.parse(query)
 
     const userId = user.sub
+
     const result = await this.fetchAppointments.execute({
       userId,
       pageIndex: pageIndex ?? 0,

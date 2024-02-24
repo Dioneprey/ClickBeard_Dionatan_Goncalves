@@ -104,9 +104,16 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
     pageIndex,
     filters,
   }: AppointmentRepositoryFindAllByClientIdParams) {
-    const status = filters?.status
-      ? AppointmentStatus[filters?.status]
-      : undefined
+    const status =
+      filters?.status === 'completed'
+        ? AppointmentStatus.COMPLETED
+        : filters?.status === 'canceled'
+          ? AppointmentStatus.CANCELLED
+          : filters?.status === 'scheduled'
+            ? AppointmentStatus.SCHEDULED
+            : filters?.status === 'in_progress'
+              ? AppointmentStatus.IN_PROGRESS
+              : undefined
 
     const date = filters?.date
 
@@ -118,10 +125,13 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
       this.prisma.appointment.findMany({
         where: {
           status,
-          day: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
+          clientId,
+          day: date
+            ? {
+                gte: startOfDay,
+                lte: endOfDay,
+              }
+            : undefined,
         },
         include: {
           Service: true,

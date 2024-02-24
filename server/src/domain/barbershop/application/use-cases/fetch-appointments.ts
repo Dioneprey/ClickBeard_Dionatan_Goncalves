@@ -66,6 +66,7 @@ export class FetchAppointmentsUseCase {
           pageIndex,
           filters: {
             status,
+            date,
           },
         })
 
