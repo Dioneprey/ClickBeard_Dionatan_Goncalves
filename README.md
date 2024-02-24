@@ -65,6 +65,9 @@ Rodar seed do banco de dados:
 ```
 npm db:seed
 ```
+Conta de administrador gerada pelo seed:
+- E-mail: admin@clickbeard.com
+- Senha: senha
 
 Iniciar Projeto:
 ```
