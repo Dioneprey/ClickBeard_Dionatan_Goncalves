@@ -81,7 +81,7 @@ export function AppointmentTableFilters() {
   return (
     <form
       onSubmit={handleSubmit(handleFilter)}
-      className="flex items-center gap-2"
+      className="flex sm:flex-row flex-col sm:items-center items-start gap-2"
     >
       <span className="text-sm font-semibold">Filtros:</span>
       <Controller
@@ -95,7 +95,7 @@ export function AppointmentTableFilters() {
               onValueChange={onChange}
               disabled={disabled}
             >
-              <SelectTrigger className="h-8 w-[180px]">
+              <SelectTrigger className="h-8 sm:w-[180px] w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +119,7 @@ export function AppointmentTableFilters() {
                 <Button
                   variant={'outline'}
                   className={cn(
-                    'w-[240px] pl-3 text-left font-normal',
+                    'sm:w-[240px] w-full pl-3 text-left font-normal',
                     !value && 'text-muted-foreground',
                   )}
                 >
@@ -139,11 +139,17 @@ export function AppointmentTableFilters() {
           )
         }}
       />
-      <Button type="submit" variant="secondary" size="xs">
+      <Button
+        className="sm:w-auto w-full"
+        type="submit"
+        variant="secondary"
+        size="xs"
+      >
         <Search className="mr-2 h-4 w-4" />
         Filtrar resultados
       </Button>
       <Button
+        className="sm:w-auto w-full"
         type="button"
         variant="outline"
         size="xs"

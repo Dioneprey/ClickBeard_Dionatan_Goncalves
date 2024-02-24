@@ -39,7 +39,7 @@ export class UpdateBarberController {
     const userId = user.sub
 
     const { id, name, hiringDate, birthDate, removePhoto, specialities } =
-      updateBarberBodySchema.parse(body)       
+      updateBarberBodySchema.parse(body)
 
     const result = await this.updateBarber.execute({
       userId,

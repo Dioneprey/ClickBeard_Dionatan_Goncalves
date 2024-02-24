@@ -69,7 +69,7 @@ export function SpecialityDrawer({
           <Separator />
 
           <div className="flex gap-5 items-center">
-            <div className="bg-primary h-16 w-16 rounded-full flex items-center justify-center">
+            <div className="bg-primary min-h-16 min-w-16 rounded-full flex items-center justify-center">
               <span className="text-2xl text-white">
                 {selectedSpecialitiesId.length}
               </span>

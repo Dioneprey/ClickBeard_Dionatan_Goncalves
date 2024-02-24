@@ -215,7 +215,7 @@ export function HandleRegistrationBarber({
             </div>
             <SpecialityDrawer
               barberSpecialities={
-                barberData?.specialities.map((item) => item.id) ?? ['']
+                barberData?.specialities.map((item) => item.id) ?? []
               }
               setValue={setValue}
             />

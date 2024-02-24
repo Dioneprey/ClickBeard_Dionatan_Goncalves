@@ -1,10 +1,27 @@
-import { Clock3, FolderClock, Home, Scissors, Users } from 'lucide-react'
+import {
+  ChevronDown,
+  Clock3,
+  FolderClock,
+  Home,
+  Scissors,
+  Users,
+} from 'lucide-react'
 
 import { ThemeToggle } from './theme/theme-toggle'
 import { Separator } from './ui/separator'
 import { AccountMenu } from './account-menu'
 import { NavLink } from './nav-link'
 import { useAuth } from '@/context/auth-context'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from './ui/button'
 
 export function Header() {
   const { user } = useAuth()
@@ -18,7 +35,7 @@ export function Header() {
 
         <Separator orientation="vertical" className="h-6" />
 
-        <nav className="flex items-center space-x-4 lg:space-x-6">
+        <nav className="sm:flex hidden items-center space-x-4 lg:space-x-6">
           <NavLink to="/">
             <Home className="h-4 w-4" />
             Início
@@ -42,6 +59,46 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Links</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="hover:bg-secondary cursor-pointer">
+                <NavLink to="/">
+                  <Home className="h-4 w-4" />
+                  Início
+                </NavLink>
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem className="hover:bg-secondary cursor-pointer">
+                  <NavLink to="/barbeiros">
+                    <Users className="h-4 w-4" />
+                    Barbeiros
+                  </NavLink>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem className="hover:bg-secondary cursor-pointer">
+                <NavLink to="/agendamentos">
+                  <FolderClock className="h-4 w-4" />
+                  Agendamentos
+                </NavLink>
+              </DropdownMenuItem>
+              {!isAdmin && (
+                <DropdownMenuItem className="hover:bg-secondary cursor-pointer">
+                  <NavLink to="/agendar">
+                    <Clock3 className="h-4 w-4" />
+                    Agendar
+                  </NavLink>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <ThemeToggle />
           <AccountMenu />
         </div>

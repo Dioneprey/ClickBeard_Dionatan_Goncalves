@@ -54,7 +54,8 @@ export class UpdateBarberUseCase {
       return left(new ResourceNotFoundError(barberData.id))
     }
 
-    const { name, hiringDate, birthDate, removePhoto, specialities } = barberData
+    const { name, hiringDate, birthDate, removePhoto, specialities } =
+      barberData
 
     const specialitiesExists = await Promise.all(
       specialities.map(async (specialityId) => {

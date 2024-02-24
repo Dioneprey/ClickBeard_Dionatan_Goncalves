@@ -11,8 +11,6 @@ import { CurrentUser } from 'src/infra/auth/current-user.decorator'
 import { UserPayload } from 'src/infra/auth/jwt.strategy'
 import { ForbbidenActionError } from 'src/domain/barbershop/application/use-cases/@errors/forbbiden-action.error'
 import { MakeAppointmentUseCase } from 'src/domain/barbershop/application/use-cases/make-appointment'
-import { Roles } from 'src/infra/auth/role.decorator'
-import { UserRole } from 'src/domain/barbershop/enterprise/entities/user'
 
 const makeAppointmentBodySchema = z.object({
   barberId: z.string(),

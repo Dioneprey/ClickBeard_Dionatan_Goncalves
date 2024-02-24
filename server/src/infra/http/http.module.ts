@@ -50,7 +50,7 @@ import { UpdateBarberUseCase } from 'src/domain/barbershop/application/use-cases
     CancelAppointmentController,
     UploadBarberImageController,
     UploadSpecialityImageController,
-    UpdateBarberController
+    UpdateBarberController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -66,7 +66,7 @@ import { UpdateBarberUseCase } from 'src/domain/barbershop/application/use-cases
     CancelAppointmentUseCase,
     UploadBarberImageUseCase,
     UploadSpecialityImageUseCase,
-    UpdateBarberUseCase
+    UpdateBarberUseCase,
   ],
 })
 export class HttpModule {}

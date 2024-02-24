@@ -13,7 +13,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import { Separator } from '@/components/ui/separator'
-import { ServiceCardOnlyView } from './service-card'
+import { ServiceCardOnlyView } from '../pages/app/schedule/components/service-card'
 import { Barber } from '@/@interfaces/Barber'
 import { useAuth } from '@/context/auth-context'
 import { HandleRegistrationBarber } from '@/components/handle-registration-barber'
@@ -36,8 +36,8 @@ export function BarberProfileDrawer({ barberData }: BarberProfileDrawerProps) {
           Ver perfil
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="justify-center items-center">
-        <DrawerHeader className="flex gap-5 justify-center ">
+      <DrawerContent className="justify-center items-center sm:h-auto h-full">
+        <DrawerHeader className="flex sm:flex-row flex-col gap-5 justify-center items-center">
           <Avatar className="h-16 w-16">
             <AvatarImage src={photo} />
             <AvatarFallback>Barbeiro</AvatarFallback>
@@ -59,7 +59,7 @@ export function BarberProfileDrawer({ barberData }: BarberProfileDrawerProps) {
             </DrawerDescription>
           </div>
         </DrawerHeader>
-        <DrawerFooter className="sm:w-[80%] w-[100%] flex gap-5 justify-center items-center">
+        <DrawerFooter className="sm:w-[80%] overflow-y-auto h-[80%] w-[100%] flex gap-5 justify-center items-center">
           {isAdmin && (
             <div className="flex justify-between items-center">
               <Button className="w-[100px] text-center">

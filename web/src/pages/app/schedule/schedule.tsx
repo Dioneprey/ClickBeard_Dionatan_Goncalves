@@ -128,9 +128,9 @@ export function Schedule() {
                 {
                   // @ts-expect-error possible undefine
                   barbers?.length < 1 ? (
-                    <div className="flex flex-col gap-5 justify-center items-center mt-[200px]">
+                    <div className="flex flex-col gap-5 justify-center items-center">
                       <Frown className="h-16 w-16" />
-                      <h2 className="text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+                      <h2 className="text-2xl text-center font-bold leading-tight tracking-tighter md:text-3xl">
                         Ops, parece que não foi cadastrado nenhum profissional.
                       </h2>
                     </div>

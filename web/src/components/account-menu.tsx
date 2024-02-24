@@ -1,7 +1,7 @@
-import { ChevronDown, CircleUserRound, LogOut, Settings } from 'lucide-react'
+import { ChevronDown, LogOut, Settings } from 'lucide-react'
 
 import { Button } from './ui/button'
-import { Dialog, DialogTrigger } from './ui/dialog'
+import { Dialog } from './ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,12 +45,6 @@ export function AccountMenu() {
             )}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild>
-            <DropdownMenuItem>
-              <CircleUserRound className="mr-2 h-4 w-4" />
-              <span>Minha conta</span>
-            </DropdownMenuItem>
-          </DialogTrigger>
           <DropdownMenuItem
             onClick={() => Logout()}
             className="cursor-pointer text-rose-500 dark:text-rose-400"

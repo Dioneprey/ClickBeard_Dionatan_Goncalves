@@ -52,6 +52,7 @@ describe('Fetch appointments', () => {
 
     const result = await sut.execute({
       userId: user.id.toString(),
+      pageIndex: 0,
     })
 
     expect(result.isRight()).toBe(true)
@@ -85,6 +86,7 @@ describe('Fetch appointments', () => {
 
     const result = await sut.execute({
       userId: user.id.toString(),
+      pageIndex: 0,
     })
 
     expect(result.isRight()).toBe(true)

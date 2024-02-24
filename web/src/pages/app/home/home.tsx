@@ -10,13 +10,13 @@ export function Home() {
     <>
       <Helmet title="Início" />
 
-      <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">
+      <h1 className="md:text-4xl sm:text-3xl text-2xl font-bold leading-tight tracking-tighter">
         Olá, {user.name}, seja bem-vindo!
       </h1>
       <span className="max-w-[750px] text-lg text-muted-foreground sm:text-xl">
         O que precisa para hoje?
       </span>
-      <div className="flex gap-5 mt-10">
+      <div className="flex sm:flex-row sm:items-start items-center flex-col gap-5 mt-10">
         {!isAdmin && (
           <HomeItemsCard
             href="agendar"

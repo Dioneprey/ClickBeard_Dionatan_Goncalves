@@ -6,9 +6,12 @@ import { makeAppointment } from 'test/factories/make-appointment'
 import dayjs from 'dayjs'
 import { ForbbidenActionError } from './@errors/forbbiden-action.error'
 import { AppointmentStatus } from '../../enterprise/entities/appointment'
+import { FakeMail } from 'test/mail/fake-mail'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository
+
+const fakeMail = new FakeMail()
 
 let sut: CancelAppointmentUseCase
 
@@ -20,6 +23,7 @@ describe('Cancel Appointment', () => {
     sut = new CancelAppointmentUseCase(
       inMemoryUsersRepository,
       inMemoryAppointmentRepository,
+      fakeMail,
     )
   })
 

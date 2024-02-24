@@ -32,7 +32,6 @@ describe('Register Speciality', () => {
       specialityData: {
         name: 'Scissors',
         price: 30,
-        time: '00:30',
       },
     })
 

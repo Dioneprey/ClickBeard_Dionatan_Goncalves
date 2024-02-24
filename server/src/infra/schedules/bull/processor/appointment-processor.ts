@@ -50,7 +50,7 @@ export class HandleAppointmentStatusProcessor {
       appointmentId,
     })
 
-    console.log('Finzalizou às: ', new Date())
+    console.log('Finalizou às: ', new Date())
 
     if (!appointment) return
     appointment.status = AppointmentStatus.COMPLETED

@@ -11,11 +11,11 @@ export class NodeMailerSendEmailService implements SendEmail {
 
   async send({ recipientEmail, message, subject }: SendEmailParams) {
     try {
-    // TODO   await this.mailerService.sendMail({
-    //     to: recipientEmail,
-    //     subject: subject ?? 'Click Beard',
-    //     html: `${message}`,
-    //   })
+      await this.mailerService.sendMail({
+        to: recipientEmail,
+        subject: subject ?? 'Click Beard',
+        html: `${message}`,
+      })
 
       console.log('E-mail enviado')
     } catch (error) {

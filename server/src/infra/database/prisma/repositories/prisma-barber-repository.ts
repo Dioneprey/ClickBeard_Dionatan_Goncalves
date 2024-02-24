@@ -87,11 +87,11 @@ export class PrismaBarberRepository implements BarberRepository {
       data: {
         ...data,
         BarberSpecialities: {
-            deleteMany: {},
-            createMany: {
-                data: specialitiesConnect,
-              },
-        }
+          deleteMany: {},
+          createMany: {
+            data: specialitiesConnect,
+          },
+        },
       },
     })
 

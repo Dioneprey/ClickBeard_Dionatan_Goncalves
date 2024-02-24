@@ -17,7 +17,7 @@ let inMemoryBarberRepository: InMemoryBarberRepository
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository
 let inMemorySpecialityRepository: InMemorySpecialityRepository
 
-let fakeMail = new FakeMail()
+const fakeMail = new FakeMail()
 
 let sut: MakeAppointmentUseCase
 
@@ -26,14 +26,13 @@ describe('Make Appointment', () => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     inMemoryBarberRepository = new InMemoryBarberRepository()
     inMemoryAppointmentRepository = new InMemoryAppointmentRepository()
-    inMemorySpecialityRepository = new InMemorySpecialityRepository()   
+    inMemorySpecialityRepository = new InMemorySpecialityRepository()
 
     sut = new MakeAppointmentUseCase(
       inMemoryUsersRepository,
       inMemoryBarberRepository,
       inMemoryAppointmentRepository,
-      fakeMail
-
+      fakeMail,
     )
   })
 
