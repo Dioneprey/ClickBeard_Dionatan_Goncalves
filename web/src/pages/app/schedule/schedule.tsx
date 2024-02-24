@@ -80,6 +80,7 @@ export function Schedule() {
       ) {
         toast.error(
           'Horário não está mais disponível, por favor, escolha outro.',
+          { closeButton: true },
         )
         setAvailableSlotsInDay([])
         toggleScheduleDateTime({

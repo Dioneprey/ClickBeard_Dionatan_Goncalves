@@ -112,7 +112,7 @@ export function HandleRegistrationBarber({
           queryKey: ['fetch-barbers'],
         })
         setRegistrationBarberDialogOpen(false)
-        toast.success('Barbeiro cadastrado com sucesso')
+        toast.success('Barbeiro cadastrado com sucesso', { closeButton: true })
       },
     })
 
@@ -127,7 +127,7 @@ export function HandleRegistrationBarber({
           queryKey: ['fetch-barbers'],
         })
         setRegistrationBarberDialogOpen(false)
-        toast.success('Barbeiro atualizado com sucesso')
+        toast.success('Barbeiro atualizado com sucesso', { closeButton: true })
       },
     })
 

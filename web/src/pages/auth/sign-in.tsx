@@ -32,7 +32,10 @@ export function SignIn() {
     mutationFn: SignInFn,
     onError: (error) => {
       console.log(error)
-      toast.error('Erro ao fazer login, por favor, tente novamente mais tarde.')
+      toast.error(
+        'Erro ao fazer login, por favor, tente novamente mais tarde.',
+        { closeButton: true },
+      )
     },
     onSuccess: () => {
       toast.success(

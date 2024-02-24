@@ -64,7 +64,9 @@ export function RegisterSpeciality() {
         queryKey: ['fetch-specialities'],
       })
       setRegisterSpecialityDialogOpen(false)
-      toast.success('Especialidade cadastrada com sucesso')
+      toast.success('Especialidade cadastrada com sucesso', {
+        closeButton: true,
+      })
     },
   })
 
