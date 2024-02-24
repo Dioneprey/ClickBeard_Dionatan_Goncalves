@@ -28,6 +28,8 @@ Admin:
 - Redis e Bull
 - Prisma ORM
 - PostgreSQL
+- Testes unitários
+- Github Actions - Testes unitários
 
 
 ## Setup
