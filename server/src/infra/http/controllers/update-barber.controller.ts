@@ -18,6 +18,7 @@ const updateBarberBodySchema = z.object({
   id: z.string(),
   name: z.string(),
   hiringDate: z.coerce.date(),
+  removePhoto: z.boolean().optional(),
   birthDate: z.coerce.date(),
   specialities: z.array(z.string()),
 })
@@ -37,14 +38,15 @@ export class UpdateBarberController {
   ) {
     const userId = user.sub
 
-    const { id, name, hiringDate, birthDate, specialities } =
-      updateBarberBodySchema.parse(body)
+    const { id, name, hiringDate, birthDate, removePhoto, specialities } =
+      updateBarberBodySchema.parse(body)       
 
     const result = await this.updateBarber.execute({
       userId,
       barberData: {
         id,
         name,
+        removePhoto,
         hiringDate,
         birthDate,
         specialities,

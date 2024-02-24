@@ -29,7 +29,6 @@ export class MakeAppointmentController {
   constructor(private readonly makeAppointment: MakeAppointmentUseCase) {}
 
   @Post()
-  @Roles(UserRole.ADMIN)
   async handle(
     @CurrentUser() user: UserPayload,
     @Body(bodyValidationPipe) body: MakeAppointmentBodySchema,

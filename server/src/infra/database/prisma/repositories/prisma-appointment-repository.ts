@@ -50,7 +50,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
           ? AppointmentStatus.CANCELLED
           : filters?.status === 'scheduled'
             ? AppointmentStatus.SCHEDULED
-            : undefined
+            : filters?.status === 'in_progress' ? AppointmentStatus.IN_PROGRESS : undefined
 
     const date = filters?.date
 
@@ -73,6 +73,9 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
           Service: true,
           Barber: true,
           Client: true,
+        },
+        orderBy: {
+            createdAt: 'desc'
         },
         skip: pageIndex * 10,
         take: 10,
@@ -122,6 +125,9 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
           Service: true,
           Barber: true,
           Client: true,
+        },
+        orderBy: {
+            createdAt: 'desc'
         },
         skip: pageIndex * 10,
         take: 10,

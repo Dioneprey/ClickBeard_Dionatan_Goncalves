@@ -36,7 +36,9 @@ const ordersFiltersSchema = z.object({
   birthDate: z.coerce.date({
     required_error: 'ordersFiltersSchema',
   }),
-  specialities: z.array(z.string()),
+  specialities: z
+    .array(z.string())
+    .min(1, { message: 'Informe ao menos uma especialidade' }),
 })
 
 type RegistrationBarberSchema = z.infer<typeof ordersFiltersSchema>
@@ -54,6 +56,7 @@ export function HandleRegistrationBarber({
     useState(false)
   const [tempSelectedImageFile, setTempSelectedImageFile] =
     useState<File | null>(null)
+  const [removeCurrentImage, setRemoveCurrentImage] = useState(false)
 
   const {
     handleSubmit,
@@ -88,7 +91,11 @@ export function HandleRegistrationBarber({
 
   async function handleRegistrationBarber(data: RegistrationBarberSchema) {
     if (isUpdate) {
-      updateBarberFn(data)
+      updateBarberFn({
+        ...data,
+        id: barberData?.id ?? '',
+        removePhoto: removeCurrentImage,
+      })
     } else {
       registerBarberFn(data)
     }
@@ -120,19 +127,22 @@ export function HandleRegistrationBarber({
           queryKey: ['fetch-barbers'],
         })
         setRegistrationBarberDialogOpen(false)
-        toast.success('Barbeiro cadastrado com sucesso')
+        toast.success('Barbeiro atualizado com sucesso')
       },
     })
 
   return (
     <Dialog
-      onOpenChange={setRegistrationBarberDialogOpen}
+      onOpenChange={(open: boolean) => {
+        setRegistrationBarberDialogOpen(open)
+        setRemoveCurrentImage(false)
+      }}
       open={registrationBarberDialogOpen}
     >
       <DialogTrigger asChild>
         <Button>{isUpdate ? 'Editar barbeiro' : 'Cadastrar novo'}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto h-full">
         <DialogHeader>
           <DialogTitle>
             {isUpdate ? 'Editar barbeiro' : 'Novo barbeiro'}
@@ -203,7 +213,12 @@ export function HandleRegistrationBarber({
                   : 'nenhum'}
               </span>
             </div>
-            <SpecialityDrawer setValue={setValue} />
+            <SpecialityDrawer
+              barberSpecialities={
+                barberData?.specialities.map((item) => item.id) ?? ['']
+              }
+              setValue={setValue}
+            />
             {errors.specialities && (
               <span className="text-red-500 text-xs">
                 Informe ao menos uma especialidade
@@ -216,7 +231,7 @@ export function HandleRegistrationBarber({
               <span className="text-xs text-muted-foreground">Opcional</span>
             </Label>
 
-            {barberData?.photo && (
+            {!removeCurrentImage && barberData?.photo && (
               <div className="flex flex-col gap-2 items-start">
                 <Label>Atual</Label>
                 <div className="flex gap-2 items-center">
@@ -226,7 +241,7 @@ export function HandleRegistrationBarber({
                   </Avatar>
                   <div>
                     <Button
-                      onClick={removeCurrentImage}
+                      onClick={() => setRemoveCurrentImage(true)}
                       type="button"
                       variant={'destructive'}
                     >
@@ -243,6 +258,7 @@ export function HandleRegistrationBarber({
               returnFile={handleTemporaryImage}
             />
           </div>
+
           <Button
             disabled={registerBarberIsPending || updateBarberIsPending}
             className="w-full"

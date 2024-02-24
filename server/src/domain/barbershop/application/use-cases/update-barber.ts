@@ -16,7 +16,7 @@ interface UpdateBarberUseCaseRequest {
     name: string
     hiringDate: Date
     birthDate: Date
-    photo?: string
+    removePhoto?: boolean
     specialities: string[]
   }
 }
@@ -54,7 +54,7 @@ export class UpdateBarberUseCase {
       return left(new ResourceNotFoundError(barberData.id))
     }
 
-    const { name, hiringDate, birthDate, specialities } = barberData
+    const { name, hiringDate, birthDate, removePhoto, specialities } = barberData
 
     const specialitiesExists = await Promise.all(
       specialities.map(async (specialityId) => {
@@ -87,6 +87,7 @@ export class UpdateBarberUseCase {
     barberExists.name = name
     barberExists.hiringDate = hiringDate
     barberExists.birthDate = birthDate
+    barberExists.photo = removePhoto ? '' : barberExists.photo
 
     barberExists.specialitiesId = specialities.map(
       (specialityId) => new UniqueEntityID(specialityId),

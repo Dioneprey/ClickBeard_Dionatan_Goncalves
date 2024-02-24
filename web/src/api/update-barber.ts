@@ -1,26 +1,29 @@
 import { api } from '@/lib/axios'
 
 export interface RegisterBarberBody {
+  id: string
   name: string
   hiringDate: Date
   birthDate: Date
-  photo?: string | null
+  removePhoto?: boolean
   specialities: string[]
 }
 
 export async function updateBarber({
+  id,
   name,
   hiringDate,
   birthDate,
   specialities,
-  photo,
+  removePhoto,
 }: RegisterBarberBody) {
-  const { data } = await api.post<{ barberId: string }>('/api/barbers', {
+  const { data } = await api.patch<{ barberId: string }>('/api/barbers', {
+    id,
     name,
     hiringDate,
     birthDate,
     specialities,
-    photo,
+    removePhoto,
   })
   return data.barberId
 }

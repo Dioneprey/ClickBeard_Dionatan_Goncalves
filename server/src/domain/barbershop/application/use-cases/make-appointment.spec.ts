@@ -10,11 +10,14 @@ import { makeAppointment } from 'test/factories/make-appointment'
 import { SlotAlreadyReservedError } from './@errors/slot-already-reserved.error'
 import dayjs from 'dayjs'
 import { InvalidAppointmentSlotError } from './@errors/invalid-appointment-slot.error'
+import { FakeMail } from 'test/mail/fake-mail'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryBarberRepository: InMemoryBarberRepository
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository
 let inMemorySpecialityRepository: InMemorySpecialityRepository
+
+let fakeMail = new FakeMail()
 
 let sut: MakeAppointmentUseCase
 
@@ -23,12 +26,14 @@ describe('Make Appointment', () => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     inMemoryBarberRepository = new InMemoryBarberRepository()
     inMemoryAppointmentRepository = new InMemoryAppointmentRepository()
-    inMemorySpecialityRepository = new InMemorySpecialityRepository()
+    inMemorySpecialityRepository = new InMemorySpecialityRepository()   
 
     sut = new MakeAppointmentUseCase(
       inMemoryUsersRepository,
       inMemoryBarberRepository,
       inMemoryAppointmentRepository,
+      fakeMail
+
     )
   })
 
@@ -47,7 +52,7 @@ describe('Make Appointment', () => {
       appointment: {
         barberId: barber.id.toString(),
         clientId: user.id.toString(),
-        day: dayjs().add(3, 'hour').toDate(),
+        day: dayjs().add(1, 'days').startOf('day').toDate(),
         hour: '14:00',
         appointmentServiceId: speciality.id.toString(),
       },

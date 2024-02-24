@@ -30,6 +30,8 @@ import { StorageModule } from '../storage/storage.module'
 import { UploadBarberImageUseCase } from 'src/domain/barbershop/application/use-cases/upload-barber-image'
 import { UploadSpecialityImageController } from './controllers/upload-speciality-image.controller'
 import { UploadSpecialityImageUseCase } from 'src/domain/barbershop/application/use-cases/upload-speciality-image'
+import { UpdateBarberController } from './controllers/update-barber.controller'
+import { UpdateBarberUseCase } from 'src/domain/barbershop/application/use-cases/update-barber'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, MailModule, StorageModule],
@@ -48,6 +50,7 @@ import { UploadSpecialityImageUseCase } from 'src/domain/barbershop/application/
     CancelAppointmentController,
     UploadBarberImageController,
     UploadSpecialityImageController,
+    UpdateBarberController
   ],
   providers: [
     AuthenticateUseCase,
@@ -63,6 +66,7 @@ import { UploadSpecialityImageUseCase } from 'src/domain/barbershop/application/
     CancelAppointmentUseCase,
     UploadBarberImageUseCase,
     UploadSpecialityImageUseCase,
+    UpdateBarberUseCase
   ],
 })
 export class HttpModule {}

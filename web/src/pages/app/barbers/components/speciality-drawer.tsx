@@ -23,13 +23,16 @@ interface SpecialityDrawerProps {
     birthDate: Date
     specialities: string[]
   }>
+  barberSpecialities: string[]
 }
 
-export function SpecialityDrawer({ setValue }: SpecialityDrawerProps) {
+export function SpecialityDrawer({
+  setValue,
+  barberSpecialities,
+}: SpecialityDrawerProps) {
   const [openSpecialityDrawer, setOpenSpecialityDrawer] = useState(false)
-  const [selectedSpecialitiesId, setSelectedSpecialitiesId] = useState<
-    string[]
-  >([])
+  const [selectedSpecialitiesId, setSelectedSpecialitiesId] =
+    useState<string[]>(barberSpecialities)
 
   const { data: specialities } = useQuery({
     queryKey: ['fetch-specialities'],

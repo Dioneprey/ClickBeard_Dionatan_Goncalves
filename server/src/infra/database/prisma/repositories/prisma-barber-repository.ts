@@ -73,11 +73,26 @@ export class PrismaBarberRepository implements BarberRepository {
   async save(barber: Barber) {
     const data = PrismaBarberMapper.toPrisma(barber)
 
+    const specialitiesConnect =
+      barber?.specialitiesId?.map((speciality) => {
+        return {
+          specialityId: speciality.toString(),
+        }
+      }) ?? []
+
     const updatedBarber = await this.prisma.barber.update({
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        ...data,
+        BarberSpecialities: {
+            deleteMany: {},
+            createMany: {
+                data: specialitiesConnect,
+              },
+        }
+      },
     })
 
     return PrismaBarberMapper.toDomain(updatedBarber)

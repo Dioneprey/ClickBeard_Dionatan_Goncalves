@@ -29,7 +29,12 @@ export function Appointments() {
 
   const pageIndex = z.coerce
     .number()
-    .transform((page) => page - 1)
+    .transform((page) => {
+      if (page <= 1) {
+        return 0
+      }
+      return page - 1
+    })
     .parse(searchParams.get('page') ?? '1')
 
   appointmentsEventSource.onmessage = (event) => {

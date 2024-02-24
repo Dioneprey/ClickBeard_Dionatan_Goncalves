@@ -102,6 +102,7 @@ export function AppointmentTableFilters() {
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="scheduled">Agendado</SelectItem>
                 <SelectItem value="completed">Finalizado</SelectItem>
+                <SelectItem value="in_progress">Em andamento</SelectItem>
                 <SelectItem value="canceled">Cancelado</SelectItem>
               </SelectContent>
             </Select>
