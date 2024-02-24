@@ -9,8 +9,8 @@ import { InMemorySpecialityRepository } from 'test/repositories/in-memory-specia
 import { makeAppointment } from 'test/factories/make-appointment'
 import { SlotAlreadyReservedError } from './@errors/slot-already-reserved.error'
 import dayjs from 'dayjs'
-import { InvalidAppointmentSlotError } from './@errors/invalid-appointment-slot.error'
 import { FakeMail } from 'test/mail/fake-mail'
+import { NoMoreSlotsInDayError } from './@errors/no-more-slots-in-day.error'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryBarberRepository: InMemoryBarberRepository
@@ -79,8 +79,8 @@ describe('Make Appointment', () => {
 
     await inMemoryUsersRepository.create(user)
     await inMemorySpecialityRepository.create(speciality)
-    await inMemoryAppointmentRepository.create(appointment)
     await inMemoryBarberRepository.create(barber)
+    await inMemoryAppointmentRepository.create(appointment)
 
     const result = await sut.execute({
       appointment: {
@@ -117,8 +117,8 @@ describe('Make Appointment', () => {
         appointmentServiceId: speciality.id.toString(),
       },
     })
-
+    
     expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(InvalidAppointmentSlotError)
+    expect(result.value).toBeInstanceOf(NoMoreSlotsInDayError)
   })
 })
