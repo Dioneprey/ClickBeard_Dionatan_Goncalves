@@ -336,18 +336,18 @@ barberId: UUID
 {
   "appointments": [
     {
-      "id": "5dde8c70-c8d2-4c83-9013-aa2d15fe5197",
-      "barberId": "af479ffa-f5e0-4890-b4ce-ba0ae9b126e9",
-      "clientId": "488b8e9a-c696-4e3e-b503-c3eb83d5fffb",
-      "day": "2024-02-28T16:30:43.295Z",
+      "id": "UUID",
+      "barberId": "UUID",
+      "clientId": "UUID",
+      "day": "Date",
       "hour": "13:30",
       "status": "scheduled",
-      "createdAt": "2024-02-24T21:38:08.219Z",
+      "createdAt": "Date",
       "service": {
-        "id": "2d0fcd5d-81ce-4207-8065-23623db0d523",
+        "id": "UUID",
         "name": "Tesoura",
-        "photo": "https://click-beard.s3.sa-east-1.amazonaws.com/click-beard/07a6d144-f6ff-4aeb-9016-28ed09903b1b-9da9dbcc3002c52e52bf8ae5cca429d9.jpg",
-        "price": 500,
+        "photo": "",
+        "price": 30,
         "time": "00:30"
       }
     }
