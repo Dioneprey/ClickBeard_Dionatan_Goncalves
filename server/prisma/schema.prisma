@@ -59,7 +59,7 @@ model Speciality {
     BarberSpecialities BarberSpecialities[]
     Appointment        Appointment[]
 
-    @@map("specialities") // Mapeia para a tabela 'specialities' no banco de dados
+    @@map("specialities")
 }
 
 model BarberSpecialities {
@@ -87,4 +87,6 @@ model Appointment {
     Client  User       @relation(fields: [clientId], references: [id])
     Service Speciality @relation(fields: [serviceId], references: [id])
     Barber  Barber     @relation(fields: [barberId], references: [id])
+
+    @@map("appointments")
 }

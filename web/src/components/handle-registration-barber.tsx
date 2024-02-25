@@ -82,7 +82,6 @@ export function HandleRegistrationBarber({
   const { data: specialities } = useQuery({
     queryKey: ['fetch-specialities'],
     queryFn: fetchSpecialities,
-    staleTime: Infinity,
   })
 
   function handleTemporaryImage(file: File | null) {
@@ -142,7 +141,7 @@ export function HandleRegistrationBarber({
       <DialogTrigger asChild>
         <Button>{isUpdate ? 'Editar barbeiro' : 'Cadastrar novo'}</Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto h-full">
+      <DialogContent className="overflow-y-auto h-full max-h-[800px]">
         <DialogHeader>
           <DialogTitle>
             {isUpdate ? 'Editar barbeiro' : 'Novo barbeiro'}

@@ -46,7 +46,6 @@ export function Schedule() {
   const { data: barbers, isLoading: isLoadingFetchBarbers } = useQuery({
     queryKey: ['fetch-barbers'],
     queryFn: fetchBarbers,
-    staleTime: Infinity,
   })
 
   const { mutateAsync: fetchBarberAvailableSlotsFn } = useMutation({

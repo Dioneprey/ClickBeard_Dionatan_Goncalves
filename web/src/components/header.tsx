@@ -30,7 +30,7 @@ export function Header() {
 
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center gap-6 px-6">
+      <div className="flex h-16 items-center xs:gap-6 gap-3 xs:px-6 px-3">
         <Scissors className="h-6 w-6 text-primary" />
 
         <Separator orientation="vertical" className="h-6" />
@@ -61,7 +61,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button className="sm:hidden flex" variant="outline">
                 <ChevronDown />
               </Button>
             </DropdownMenuTrigger>

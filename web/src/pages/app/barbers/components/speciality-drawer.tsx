@@ -37,7 +37,6 @@ export function SpecialityDrawer({
   const { data: specialities } = useQuery({
     queryKey: ['fetch-specialities'],
     queryFn: fetchSpecialities,
-    staleTime: Infinity,
   })
 
   return (
@@ -78,7 +77,9 @@ export function SpecialityDrawer({
               <span>Especialidade(s) selecionada(s)</span>
             </div>
             <Button
-              onClick={() => {
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
                 setOpenSpecialityDrawer(false)
                 setValue('specialities', selectedSpecialitiesId)
               }}
