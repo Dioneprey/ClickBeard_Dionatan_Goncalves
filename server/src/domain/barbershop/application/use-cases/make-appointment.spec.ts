@@ -112,7 +112,7 @@ describe('Make Appointment', () => {
       appointment: {
         barberId: barber.id.toString(),
         clientId: user.id.toString(),
-        day: dayjs().startOf('day').toDate(),
+        day: dayjs().add(1, 'day').startOf('day').toDate(),
         hour: '22:00',
         appointmentServiceId: speciality.id.toString(),
       },
