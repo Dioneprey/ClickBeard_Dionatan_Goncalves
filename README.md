@@ -23,7 +23,7 @@ Admin:
 - Clean Architecture
 - DDD ( Domain-driven design )
 - Princípios SOLID
-- SSE ( Server-sent events ) - Mantendo a página de agendamentos sempre atualizada em tempo real
+- SSE ( Server-sent events ) - Mantendo a página de agendamentos sempre atualizada em tempo real ( '/agendamentos' )
 - S3
 - Redis e Bull
 - Prisma ORM
@@ -63,7 +63,7 @@ docker compose up -d
 
 Rodar seed do banco de dados:
 ```
-npm db:seed
+npm run db:seed
 ```
 Conta de administrador gerada pelo seed:
 - E-mail: admin@clickbeard.com
